@@ -3,8 +3,8 @@ import { defineConfig } from 'cypress';
 export default defineConfig({
   e2e: {
     baseUrl: process.env.CYPRESS_BASE_URL ?? 'http://localhost:3000',
-    specPattern: 'cypress/e2e/**/*.cy.ts',
-    supportFile: 'cypress/support/e2e.ts',
+    specPattern: 'cypress/e2e/**/*.cy.js',
+    supportFile: 'cypress/support/e2e.js',
     fixturesFolder: 'cypress/fixtures',
     video: false,
     screenshotsFolder: 'reports/cypress/screenshots',

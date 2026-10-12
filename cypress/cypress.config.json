@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../cypress.config.json",
   "compilerOptions": {
     "types": [
       "cypress",
@@ -8,5 +8,5 @@
   },
   "include": [
     "**/*.ts"
-  ]
+, "support/commands.js", "support/e2e.js"  ]
 }

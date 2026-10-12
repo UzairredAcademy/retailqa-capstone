@@ -3,26 +3,26 @@
  * Selectors are placeholders (data-test attributes) - confirm them against the real application.
  */
 export class LoginPage {
-  private readonly selectors = {
+  selectors = {
     email: '[data-test="email"]',
     password: '[data-test="password"]',
     submit: '[data-test="login-submit"]',
     error: '[data-test="login-error"]',
   };
 
-  visit(): this {
+  visit() {
     cy.visit('/login');
     return this;
   }
 
-  login(email: string, password: string): this {
+  login(email, password) {
     cy.get(this.selectors.email).clear().type(email);
     cy.get(this.selectors.password).clear().type(password, { log: false });
     cy.get(this.selectors.submit).click();
     return this;
   }
 
-  errorMessage(): Cypress.Chainable<JQuery<HTMLElement>> {
+  errorMessage() {
     return cy.get(this.selectors.error);
   }
 }
