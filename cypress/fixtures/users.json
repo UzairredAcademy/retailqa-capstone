@@ -1,0 +1,16 @@
+{
+  "validUser": {
+    "email": "REPLACE_ME@example.test",
+    "password": "SET_VIA_ENV_OR_LOCAL_FIXTURE"
+  },
+  "invalidUsers": [
+    {
+      "email": "REPLACE_ME@example.test",
+      "password": "wrong-password"
+    },
+    {
+      "email": "unknown@example.test",
+      "password": "wrong-password"
+    }
+  ]
+}

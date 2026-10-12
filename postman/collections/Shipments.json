@@ -1,0 +1,237 @@
+{
+  "info": {
+    "name": "Shipment APIs",
+    "description": "Shipment APIs (P0). Preconditions: Valid auth token (customer + admin/warehouse role); paid and unpaid orders exist",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "T-API-SHP-001: Shipment is created after payment is confirmed",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-004-AC1 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-SHP-001: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. Pay for an order\n2. GET shipments for the order\n\nExpected: A shipment exists with status Processing/Created and is linked to the paid order"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-SHP-002: No shipment is created for an unpaid order",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-004-AC1 | Negative",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-SHP-002: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. Create an unpaid order\n2. Attempt POST /shipments for it\n3. GET shipments for the order\n\nExpected: Creation is rejected (400/409) and no shipment exists"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-SHP-003: Tracking number is assigned, unique and correctly formatted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-004-AC2 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-SHP-003: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. Create shipments for two orders\n2. Assert tracking numbers\n\nExpected: Each shipment has a non-empty tracking number matching the agreed format; the two numbers differ"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-SHP-004: Shipment status progresses Processing to Shipped",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-004-AC3 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-SHP-004: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. PATCH the status to Shipped (warehouse role)\n2. GET the shipment\n\nExpected: 200 OK; status is Shipped with a timestamp; history lists both states in order"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-SHP-005: Invalid shipment status transitions are rejected",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-004-AC3 | Negative",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-SHP-005: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. Try Delivered > Shipped\n2. Try skipping from Processing to Delivered (if disallowed)\n3. Use a customer token to update status\n\nExpected: Invalid transitions return 400/409 and customers get 403; status is unchanged"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-SHP-006: Shipped notification (SMS/Email) is triggered",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-004-AC4 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-SHP-006: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. Move a shipment to Shipped\n2. Check the notification endpoint, test mailbox or SMS stub\n\nExpected: One email and/or SMS is sent to the customer, containing the order reference and tracking number"
+      },
+      "response": []
+    }
+  ]
+}

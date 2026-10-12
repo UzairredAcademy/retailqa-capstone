@@ -1,0 +1,161 @@
+{
+  "info": {
+    "name": "Delivery APIs",
+    "description": "Delivery APIs (P0). Preconditions: Valid auth token; shipment with a tracking number exists",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "T-API-DEL-001: GET tracking by tracking number returns status and history",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-004-AC2, FR-004-AC3 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-DEL-001: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. GET /tracking/{trackingNumber}\n2. Assert fields\n3. GET with an unknown number\n\nExpected: Valid number returns 200 with the current status and ordered history; unknown number returns 404 with a clear message"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-DEL-002: Marking a shipment Delivered updates the status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-004-AC3 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-DEL-002: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. PATCH the shipment to Delivered\n2. GET the shipment and the order\n\nExpected: Shipment and order show Delivered with a delivery timestamp"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-DEL-003: Proof of delivery is recorded",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-004-AC5 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-DEL-003: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. Submit delivery with POD data (recipient name, signature/photo reference, timestamp)\n2. GET the shipment\n\nExpected: POD is stored and returned; delivery without mandatory POD fields is rejected"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-DEL-004: Delivered notification (SMS/Email) is triggered",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-004-AC4 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-DEL-004: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. Mark Delivered\n2. Check the notification endpoint, test mailbox or SMS stub\n\nExpected: A delivered notification is sent once to the customer"
+      },
+      "response": []
+    }
+  ]
+}

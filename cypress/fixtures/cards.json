@@ -1,0 +1,18 @@
+{
+  "_note": "Use the payment sandbox's documented test cards only. Never commit real card data.",
+  "valid": {
+    "number": "REPLACE_ME",
+    "expiry": "MM/YY",
+    "cvv": "000"
+  },
+  "declined": {
+    "number": "REPLACE_ME",
+    "expiry": "MM/YY",
+    "cvv": "000"
+  },
+  "expired": {
+    "number": "REPLACE_ME",
+    "expiry": "01/20",
+    "cvv": "000"
+  }
+}

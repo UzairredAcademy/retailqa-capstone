@@ -1,0 +1,3 @@
+-- Reset the test database to a known state before each full run.
+-- TODO: truncate/delete in FK-safe order, then re-run 01_seed_data.sql.
+-- WARNING: run against the TEST database only.

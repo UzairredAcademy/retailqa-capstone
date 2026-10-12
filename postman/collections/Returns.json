@@ -1,0 +1,161 @@
+{
+  "info": {
+    "name": "Returns APIs",
+    "description": "Returns APIs (P1). Preconditions: Valid auth token; delivered orders aged inside and outside 30 days",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "T-API-RET-001: POST /returns inside the window is accepted; boundary day 30 accepted and day 31 rejected",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-005-AC1 | Positive / Boundary",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-RET-001: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. Return an order delivered 10 days ago\n2. Return an order delivered exactly 30 days ago\n3. Return an order delivered 31 days ago\n\nExpected: 10 days and 30 days: 201 Created; 31 days: 400/422 with a return-window error and no return created"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-RET-002: Refund amount is calculated correctly for a return",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-005-AC2 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-RET-002: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. Return one item from an order that used a coupon\n2. GET the return/refund details\n\nExpected: Refund = item price less proportional discount plus applicable tax, matching the independently calculated value"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-RET-003: Refund is issued to the original payment method",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-005-AC3 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-RET-003: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. Complete the return\n2. GET the refund\n3. GET the original payment\n\nExpected: The refund references the original payment id and method; no refund to a different method is possible"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-RET-004: Return of an item that was not part of the order is rejected",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-005-AC1, FR-005-AC2 | Negative",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-RET-004: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. POST a return containing an SKU not on the order\n2. POST a quantity above the quantity ordered\n\nExpected: 400/422 with a clear error; no return or refund is created"
+      },
+      "response": []
+    }
+  ]
+}

@@ -1,0 +1,313 @@
+{
+  "info": {
+    "name": "Payment APIs",
+    "description": "Payment APIs (P0). Preconditions: Valid auth token; unpaid order exists; sandbox test card numbers available",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "T-API-PAY-001: Payment with a valid card is authorized",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-003-AC2 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-PAY-001: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. POST payment for an unpaid order with a valid sandbox card\n2. GET the payment\n3. GET the order\n\nExpected: 200/201 with status Authorized/Settled; payment amount equals the order total; order status becomes Paid"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-PAY-002: Invalid card number is rejected",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-003-AC1 | Negative",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-PAY-002: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. POST a non-numeric number\n2. POST a short number\n3. POST a number that fails Luhn\n\nExpected: 400/422 with a card-number validation error; no payment record created"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-PAY-003: Expired card is rejected",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-003-AC1 | Boundary",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-PAY-003: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. POST expiry = previous month\n2. POST expiry = current month\n\nExpected: Previous month rejected with an expiry error; current month accepted"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-PAY-004: Invalid CVV is rejected",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-003-AC1 | Negative",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-PAY-004: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. POST a 2-digit CVV\n2. POST a non-numeric CVV\n3. POST with CVV missing\n\nExpected: 400/422 with a CVV validation error each time; no charge made"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-PAY-005: Declined card returns a graceful, structured decline response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-003-AC3 | Negative",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-PAY-005: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. POST payment with the sandbox decline card\n2. GET the order\n\nExpected: Structured decline (e.g. 402) with a decline code and message and no stack trace; order remains unpaid"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-PAY-006: Duplicate payment for the same order does not double-charge",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-003-AC4 | Negative",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-PAY-006: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. POST payment with an Idempotency-Key\n2. POST the same payment again\n3. POST a new payment for the already paid order\n4. GET payments for the order\n\nExpected: Only one successful payment exists; repeated calls return the original result or 409"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-PAY-007: Full refund returns the full amount to the original payment method",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-003-AC5 | Positive",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-PAY-007: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. POST refund for a paid order\n2. GET the refund\n3. GET the payment\n\nExpected: Refund amount equals the amount paid; refund references the original payment; status is Refunded/Completed"
+      },
+      "response": []
+    },
+    {
+      "name": "T-API-PAY-008: Partial refund works and refunds above the paid amount are rejected",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// FR-003-AC5 | Positive / Boundary",
+              "// TODO: replace with real assertions - status code, schema and data (brief section 8.2)",
+              "pm.test(\"T-API-PAY-008: status code is as expected\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/TODO",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "TODO"
+          ]
+        },
+        "description": "Steps:\n1. POST a partial refund\n2. POST a second refund that would exceed the paid amount\n3. GET refunds\n\nExpected: The partial refund succeeds; the over-refund is rejected with 400/409; total refunded never exceeds the amount paid"
+      },
+      "response": []
+    }
+  ]
+}

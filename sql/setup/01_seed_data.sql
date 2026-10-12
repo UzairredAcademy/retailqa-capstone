@@ -1,0 +1,3 @@
+-- Seed test data for RetailQE validation runs.
+-- TODO: replace with inserts that match the real schema. No PII: use synthetic customers only.
+-- Keep this script idempotent so it can be re-run after 02_reset.sql.

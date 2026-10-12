@@ -1,0 +1,37 @@
+{
+  "name": "retailqe-capstone",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RetailQE - Cypress, Postman and SQL automation framework for the Lewis Retail Group delivery module",
+  "scripts": {
+    "cy:open": "cypress open",
+    "test:ui": "cypress run",
+    "test:ui:chrome": "cypress run --browser chrome",
+    "test:ui:firefox": "cypress run --browser firefox",
+    "test:ui:edge": "cypress run --browser edge",
+    "test:api": "node postman/run-newman.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,js,mjs}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,mjs}\"",
+    "typecheck": "tsc --noEmit -p cypress/tsconfig.json",
+    "quality": "npm run lint && npm run format:check && npm run typecheck"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/node": "^20.0.0",
+    "cypress": "^13.0.0",
+    "cypress-mochawesome-reporter": "^3.8.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-cypress": "^3.5.0",
+    "globals": "^15.0.0",
+    "newman": "^5.0.0",
+    "newman-reporter-htmlextra": "^1.23.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

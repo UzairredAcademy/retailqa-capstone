@@ -1,0 +1,6 @@
+{
+  "valid": "REPLACE_WITH_VALID_CODE",
+  "invalid": "NOT-A-COUPON",
+  "expired": "REPLACE_WITH_EXPIRED_CODE",
+  "used": "REPLACE_WITH_USED_CODE"
+}
