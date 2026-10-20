@@ -1,7 +1,9 @@
 /// <reference types="cypress" />
 
 describe('API Authentication Tests', () => {
-  const apiBaseUrl = Cypress.env('API_BASE_URL') || 'http://localhost:5000/api';
+  const apiBaseUrl = Cypress.env('API_BASE_URL') || 'http://localhost:4000/api';
+  const validEmail = 'customer1@retailqe.test';
+  const validPassword = 'Pass123!';
 
   // ---------------------------------------------------------------------------
   // Test Case 1: Successful Login with Valid Credentials
@@ -11,17 +13,16 @@ describe('API Authentication Tests', () => {
       method: 'POST',
       url: `${apiBaseUrl}/auth/login`,
       body: {
-        email: 'admin@lewisretail.co.za', // Standard test user credentials
-        password: 'Password123!'
+        email: validEmail,
+        password: validPassword,
       },
-      failOnStatusCode: false
+      failOnStatusCode: false,
     }).then((response) => {
-      // Assertions
       expect(response.status).to.eq(200);
       expect(response.body).to.have.property('token');
       expect(response.body.token).to.be.a('string').and.not.be.empty;
       expect(response.body).to.have.property('user');
-      expect(response.body.user).to.have.property('email', 'admin@lewisretail.co.za');
+      expect(response.body.user).to.have.property('email', validEmail);
     });
   });
 
@@ -33,15 +34,14 @@ describe('API Authentication Tests', () => {
       method: 'POST',
       url: `${apiBaseUrl}/auth/login`,
       body: {
-        email: 'admin@lewisretail.co.za',
-        password: 'WrongPassword123!'
+        email: validEmail,
+        password: 'WrongPassword123!',
       },
-      failOnStatusCode: false
+      failOnStatusCode: false,
     }).then((response) => {
-      // Assertions
       expect(response.status).to.eq(401);
-      expect(response.body).to.have.property('error');
-      expect(response.body.error).to.match(/invalid credentials|unauthorized/i);
+      expect(response.body).to.have.property('message');
+      expect(response.body.message).to.match(/invalid credentials|unauthorized/i);
     });
   });
 
@@ -53,14 +53,14 @@ describe('API Authentication Tests', () => {
       method: 'POST',
       url: `${apiBaseUrl}/auth/login`,
       body: {
-        email: 'nonexistent.user@lewisretail.co.za',
-        password: 'Password123!'
+        email: 'nonexistent.user@retailqe.test',
+        password: validPassword,
       },
-      failOnStatusCode: false
+      failOnStatusCode: false,
     }).then((response) => {
-      // Assertions
       expect(response.status).to.eq(401);
-      expect(response.body).to.have.property('error');
+      expect(response.body).to.have.property('message');
+      expect(response.body.message).to.match(/invalid credentials|unauthorized/i);
     });
   });
 
@@ -72,14 +72,13 @@ describe('API Authentication Tests', () => {
       method: 'POST',
       url: `${apiBaseUrl}/auth/login`,
       body: {
-        email: 'admin@lewisretail.co.za'
-        // Missing required 'password' field
+        email: validEmail,
       },
-      failOnStatusCode: false
+      failOnStatusCode: false,
     }).then((response) => {
-      // Assertions
       expect(response.status).to.eq(400);
-      expect(response.body).to.have.property('error');
+      expect(response.body).to.have.property('message');
+      expect(response.body.message).to.match(/email and password are required/i);
     });
   });
 });
