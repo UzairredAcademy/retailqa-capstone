@@ -1,0 +1,30 @@
+# RetailQE Runtime Pack - Manifest
+
+- `.env.example`
+- `FIX_NOTES.md`
+- `PACK_MANIFEST.md`
+- `RESET_SYSTEM.bat`
+- `RUN_SYSTEM.bat`
+- `START_HERE.md`
+- `STOP_SYSTEM.bat`
+- `VERSION.txt`
+- `access/LOCAL_SYSTEM_ACCESS.md`
+- `access/TEST_CREDENTIALS.md`
+- `api-contract/RetailQE_OpenAPI.yaml`
+- `database/01_schema.sql`
+- `database/02_seed.sql`
+- `database/03_reset_training_data.sql`
+- `docker-compose.yml`
+- `system/api/Dockerfile`
+- `system/api/package.json`
+- `system/api/src/db.js`
+- `system/api/src/server.js`
+- `system/web/Dockerfile`
+- `system/web/index.html`
+- `system/web/nginx.conf`
+- `system/web/package.json`
+- `system/web/src/App.jsx`
+- `system/web/src/api.js`
+- `system/web/src/main.jsx`
+- `system/web/src/styles.css`
+- `system/web/vite.config.js`
