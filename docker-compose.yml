@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  retailqa:
+    build: .
+    container_name: retailqa-capstone
+    environment:
+      - NODE_ENV=test
+    volumes:
+      - ./cypress:/app/cypress
+      - ./postman:/app/postman
+      - ./reports:/app/reports
+    command: npm run test:ui

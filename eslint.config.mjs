@@ -1,19 +1,29 @@
 import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
 import cypress from 'eslint-plugin-cypress/flat';
 import globals from 'globals';
 
-export default tseslint.config(
+const cypressRecommended = cypress.configs.recommended;
+
+export default [
   { ignores: ['node_modules/**', 'reports/**', 'jira-export/**'] },
   js.configs.recommended,
-  ...tseslint.configs.recommended,
   {
-    files: ['cypress/**/*.ts'],
-    ...cypress.configs.recommended,
+    // Cypress specs, page objects and commands (ES modules)
+    ...cypressRecommended,
+    files: ['cypress/**/*.js'],
+    languageOptions: {
+      ...cypressRecommended.languageOptions,
+      sourceType: 'module',
+      globals: {
+        ...cypressRecommended.languageOptions?.globals,
+        ...globals.browser,
+        ...globals.mocha,
+      },
+    },
   },
   {
-    files: ['postman/**/*.js', 'cypress.config.ts'],
-    languageOptions: { globals: { ...globals.node } },
-    rules: { '@typescript-eslint/no-require-imports': 'off' },
+    // Node scripts (CommonJS)
+    files: ['cypress.config.js', 'postman/**/*.js'],
+    languageOptions: { sourceType: 'commonjs', globals: { ...globals.node } },
   },
-);
+];

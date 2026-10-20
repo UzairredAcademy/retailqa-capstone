@@ -3,10 +3,11 @@ reports/*
 !reports/README.md
 cypress/videos/
 cypress/screenshots/
-.env
-.env.*
-!.env.example
-cypress/fixtures/*.local.json
+.env/
+.env.*/
+!.env.example/
+cypress/fixtures/*.local.json/
 postman/environments/*.secret.*
-*.log
-.DS_Store
+*.log/
+.DS_Store/
+cypress.env.json/
