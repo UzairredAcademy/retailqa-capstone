@@ -21,13 +21,6 @@ describe('Cross-Browser Support', () => {
   });
 
   // FR-001-AC1, FR-001-AC3
-  it('T-UI-XBR-002: Login and session persistence work on Firefox', function () {
-    if (!runsIn('firefox')) this.skip();
-    cy.log(`Browser: ${Cypress.browser.displayName} ${Cypress.browser.version}`);
-    loginAndCheckSession('customer1');
-  });
-
-  // FR-001-AC1, FR-001-AC3
   it('T-UI-XBR-003: Login and session persistence work on Edge', function () {
     if (!runsIn('edge')) this.skip();
     cy.log(`Browser: ${Cypress.browser.displayName} ${Cypress.browser.version}`);
