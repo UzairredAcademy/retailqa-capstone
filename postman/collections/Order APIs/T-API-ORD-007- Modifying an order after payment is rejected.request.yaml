@@ -1,0 +1,24 @@
+$kind: http-request
+name: "T-API-ORD-007: Modifying an order after payment is rejected"
+description: |-
+  Steps:
+  1. Take a paid order
+  2. PUT a quantity change
+  3. PUT an address change
+  4. GET the order
+
+  Expected: Both calls return 409/403/422 with a clear reason; the order is unchanged
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-002-AC5 | Negative
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-ORD-007: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 7000

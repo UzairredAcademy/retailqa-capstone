@@ -1,0 +1,22 @@
+$kind: http-request
+name: "T-API-DEL-002: Marking a shipment Delivered updates the status"
+description: |-
+  Steps:
+  1. PATCH the shipment to Delivered
+  2. GET the shipment and the order
+
+  Expected: Shipment and order show Delivered with a delivery timestamp
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-004-AC3 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-DEL-002: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 2000

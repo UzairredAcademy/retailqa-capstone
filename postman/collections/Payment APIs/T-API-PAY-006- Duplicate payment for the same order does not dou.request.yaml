@@ -1,0 +1,24 @@
+$kind: http-request
+name: "T-API-PAY-006: Duplicate payment for the same order does not double-charge"
+description: |-
+  Steps:
+  1. POST payment with an Idempotency-Key
+  2. POST the same payment again
+  3. POST a new payment for the already paid order
+  4. GET payments for the order
+
+  Expected: Only one successful payment exists; repeated calls return the original result or 409
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-003-AC4 | Negative
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-PAY-006: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 6000

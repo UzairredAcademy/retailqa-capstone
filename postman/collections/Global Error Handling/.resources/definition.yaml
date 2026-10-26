@@ -1,0 +1,2 @@
+$kind: collection
+description: "Global Error Handling (P0). Preconditions: Postman environment configured; valid and invalid tokens available"

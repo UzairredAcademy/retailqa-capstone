@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-ERR-001: Unauthenticated and invalid-token requests return 401 with a consistent error schema"
+description: |-
+  Steps:
+  1. Call protected endpoints with no token
+  2. Call with a tampered token
+  3. Call with an expired token
+
+  Expected: 401 each time; the JSON error body has the standard fields (code, message); no internal details leaked
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-001-AC2 | Negative
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-ERR-001: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 1000

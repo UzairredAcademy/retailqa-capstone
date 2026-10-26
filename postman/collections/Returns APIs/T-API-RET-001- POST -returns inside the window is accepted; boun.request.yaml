@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-RET-001: POST /returns inside the window is accepted; boundary day 30 accepted and day 31 rejected"
+description: |-
+  Steps:
+  1. Return an order delivered 10 days ago
+  2. Return an order delivered exactly 30 days ago
+  3. Return an order delivered 31 days ago
+
+  Expected: 10 days and 30 days: 201 Created; 31 days: 400/422 with a return-window error and no return created
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-005-AC1 | Positive / Boundary
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-RET-001: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 1000

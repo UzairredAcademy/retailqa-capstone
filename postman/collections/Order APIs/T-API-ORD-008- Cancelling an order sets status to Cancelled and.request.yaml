@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-ORD-008: Cancelling an order sets status to Cancelled and releases stock"
+description: |-
+  Steps:
+  1. GET stock for the SKU
+  2. Create an order and cancel it
+  3. GET the order and GET the stock
+
+  Expected: Order status is Cancelled; stock returns to the original level
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-002-AC6 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-ORD-008: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 8000

@@ -1,0 +1,2 @@
+$kind: collection
+description: "Order APIs (P0). Preconditions: Valid auth token in environment; SKUs, coupons and addresses seeded"

@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-PAY-007: Full refund returns the full amount to the original payment method"
+description: |-
+  Steps:
+  1. POST refund for a paid order
+  2. GET the refund
+  3. GET the payment
+
+  Expected: Refund amount equals the amount paid; refund references the original payment; status is Refunded/Completed
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-003-AC5 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-PAY-007: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 7000

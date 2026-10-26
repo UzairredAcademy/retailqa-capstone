@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-ORD-003: Order total equals items x price + tax"
+description: |-
+  Steps:
+  1. Create an order with multiple items
+  2. Compute the expected total in a Postman test script
+  3. Compare with the response
+
+  Expected: subtotal, tax and total in the response equal the expected values to 2 decimals
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-002-AC2 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-ORD-003: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 3000

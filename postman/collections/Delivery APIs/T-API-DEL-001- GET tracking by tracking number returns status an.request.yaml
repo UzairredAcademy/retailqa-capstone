@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-DEL-001: GET tracking by tracking number returns status and history"
+description: |-
+  Steps:
+  1. GET /tracking/{trackingNumber}
+  2. Assert fields
+  3. GET with an unknown number
+
+  Expected: Valid number returns 200 with the current status and ordered history; unknown number returns 404 with a clear message
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-004-AC2, FR-004-AC3 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-DEL-001: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 1000

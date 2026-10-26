@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-ERR-002: Malformed or incomplete requests return 400 with field-level errors"
+description: |-
+  Steps:
+  1. POST invalid JSON
+  2. POST with required fields missing
+  3. POST with wrong data types
+
+  Expected: 400 with a clear validation error naming the offending fields; no server error
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-002-AC1 | Negative
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-ERR-002: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 2000

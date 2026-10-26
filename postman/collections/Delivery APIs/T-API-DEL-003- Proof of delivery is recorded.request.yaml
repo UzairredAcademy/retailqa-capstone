@@ -1,0 +1,22 @@
+$kind: http-request
+name: "T-API-DEL-003: Proof of delivery is recorded"
+description: |-
+  Steps:
+  1. Submit delivery with POD data (recipient name, signature/photo reference, timestamp)
+  2. GET the shipment
+
+  Expected: POD is stored and returned; delivery without mandatory POD fields is rejected
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-004-AC5 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-DEL-003: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 3000

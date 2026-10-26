@@ -1,0 +1,25 @@
+$kind: http-request
+name: "T-API-ORD-010: GET /orders returns paginated and filtered order history"
+description: |-
+  Steps:
+  1. GET page 1 with page size 10
+  2. GET page 2
+  3. Filter by status
+  4. Filter by date range
+  5. Filter by price range
+
+  Expected: Page size, total count and links are correct with no duplicates across pages; each filter returns only matching orders
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-006-AC1, FR-006-AC2 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-ORD-010: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 10000

@@ -1,0 +1,22 @@
+$kind: http-request
+name: "T-API-PAY-005: Declined card returns a graceful, structured decline response"
+description: |-
+  Steps:
+  1. POST payment with the sandbox decline card
+  2. GET the order
+
+  Expected: Structured decline (e.g. 402) with a decline code and message and no stack trace; order remains unpaid
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-003-AC3 | Negative
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-PAY-005: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 5000

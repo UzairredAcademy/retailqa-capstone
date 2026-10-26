@@ -1,0 +1,24 @@
+$kind: http-request
+name: "T-API-AUTH-003: Logout invalidates the session token"
+description: |-
+  Steps:
+  1. Log in and capture the token
+  2. Call a protected endpoint (200)
+  3. Call POST /auth/logout
+  4. Re-use the same token
+
+  Expected: Logout returns 200/204; the same token is then rejected with 401
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-001-AC5 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-AUTH-003: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 3000
