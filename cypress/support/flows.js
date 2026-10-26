@@ -10,24 +10,24 @@ import { credentials, round2, TAX_RATE } from './utils';
 export function loginAndCheckSession(userKey = 'customer1') {
   const login = new LoginPage();
   const nav = new Nav();
-  const { email, password } = credentials(userKey);
-
-  login.visit().loginWith(email, password);
-  cy.location('pathname').should('eq', '/dashboard');
-  nav.auth().should('have.text', 'Sign out');
-
-  const pages = [
-    [() => nav.orders(), '/orders'],
-    [() => nav.createOrder(), '/create-order'],
-    [() => nav.profile(), '/profile'],
-    [() => nav.dashboard(), '/dashboard'],
-  ];
-  pages.forEach(([link, path]) => {
-    link().click();
-    cy.location('pathname').should('eq', path);
-    cy.reload();
-    cy.location('pathname').should('eq', path);
+  return credentials(userKey).then(({ email, password }) => {
+    login.visit().loginWith(email, password);
+    cy.location('pathname').should('eq', '/dashboard');
     nav.auth().should('have.text', 'Sign out');
+
+    const pages = [
+      [() => nav.orders(), '/orders'],
+      [() => nav.createOrder(), '/create-order'],
+      [() => nav.profile(), '/profile'],
+      [() => nav.dashboard(), '/dashboard'],
+    ];
+    pages.forEach(([link, path]) => {
+      link().click();
+      cy.location('pathname').should('eq', path);
+      cy.reload();
+      cy.location('pathname').should('eq', path);
+      nav.auth().should('have.text', 'Sign out');
+    });
   });
 }
 

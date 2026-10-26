@@ -33,7 +33,7 @@ describe('Returns & Refunds', () => {
   it('T-UI-RET-002: Return is blocked after the 30-day window', function () {
     // Needs an order delivered more than 30 days ago. Dates must not be edited, so ask the facilitator for
     // such an order and put its id in cypress.env.json as "agedOrderId".
-    const agedOrderId = Cypress.env('agedOrderId');
+    const agedOrderId = Cypress.expose('agedOrderId');
     if (!/^\d+$/.test(String(agedOrderId))) {
       // BLOCKED: no aged order supplied (set agedOrderId in cypress.env.json)
       this.skip();

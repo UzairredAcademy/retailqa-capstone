@@ -10,22 +10,23 @@ const loginPage = new LoginPage();
  * @param {string} userKey customer1 | customer2 | admin (cypress/fixtures/users.json)
  */
 Cypress.Commands.add('loginAs', (userKey) => {
-  const { email, password } = credentials(userKey);
-  cy.session(
-    ['ui-login', userKey],
-    () => {
-      loginPage.visit().loginWith(email, password);
-      cy.location('pathname').should('eq', '/dashboard');
-    },
-    {
-      // The app expires sessions after 30 minutes, so check the restored session is still valid.
-      validate() {
-        cy.visit('/dashboard');
-        cy.contains('h1', 'Dashboard').should('be.visible');
+  return credentials(userKey).then(({ email, password }) => {
+    cy.session(
+      ['ui-login', userKey],
+      () => {
+        loginPage.visit().loginWith(email, password);
+        cy.location('pathname').should('eq', '/dashboard');
       },
-    },
-  );
-  cy.visit('/dashboard');
+      {
+        // The app expires sessions after 30 minutes, so check the restored session is still valid.
+        validate() {
+          cy.visit('/dashboard');
+          cy.contains('h1', 'Dashboard').should('be.visible');
+        },
+      },
+    );
+    cy.visit('/dashboard');
+  });
 });
 
 // ------------------------------------------------------------------------------------------

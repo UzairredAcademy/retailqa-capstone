@@ -31,29 +31,32 @@ export const parseTotals = (text) => {
 /** Login details for a fixture user. Passwords come from cypress.env.json (git-ignored). */
 export const credentials = (key) => {
   const user = users[key];
-  const password = Cypress.env(`${key}Password`);
   if (!user) throw new Error(`Unknown user "${key}" - see cypress/fixtures/users.json`);
-  if (!password) {
-    throw new Error(
-      `Missing Cypress env "${key}Password". Copy cypress.env.example.json to cypress.env.json and fill it in.`,
-    );
-  }
-  return { email: user.email, password };
+  const passwordKey = `${key}Password`;
+  return cy.env([passwordKey]).then((env) => {
+    const password = env[passwordKey];
+    if (!password) {
+      throw new Error(
+        `Missing Cypress env "${passwordKey}". Copy cypress.env.example.json to cypress.env.json and fill it in.`,
+      );
+    }
+    return { email: user.email, password };
+  });
 };
 
-export const apiUrl = (path) => `${Cypress.env('apiUrl')}${path}`;
+export const apiUrl = (path) => `${Cypress.expose('apiUrl')}${path}`;
 
 /**
  * Orders created by a test are remembered here so the global afterEach (support/e2e.js) can cancel the
- * unpaid ones and put the stock back. Stored in Cypress.env because the support file and each spec are
+ * unpaid ones and put the stock back. Stored in Cypress.expose because the support file and each spec are
  * bundled separately and would not share module state.
  */
 export const trackOrder = (orderId) => {
-  const list = Cypress.env('trackedOrders') || [];
-  Cypress.env('trackedOrders', [...list, Number(orderId)]);
+  const list = Cypress.expose('trackedOrders') || [];
+  Cypress.expose('trackedOrders', [...list, Number(orderId)]);
 };
 export const drainTrackedOrders = () => {
-  const list = Cypress.env('trackedOrders') || [];
-  Cypress.env('trackedOrders', []);
+  const list = Cypress.expose('trackedOrders') || [];
+  Cypress.expose('trackedOrders', []);
   return list;
 };

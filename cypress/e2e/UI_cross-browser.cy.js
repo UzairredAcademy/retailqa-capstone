@@ -10,7 +10,7 @@ const order = new OrderDetailPage();
 const nav = new Nav();
 
 /** True when the current browser is one of the given names (or xbrAny is set). */
-const runsIn = (...names) => Boolean(Cypress.env('xbrAny')) || names.includes(Cypress.browser.name);
+const runsIn = (...names) => Boolean(Cypress.expose('xbrAny')) || names.includes(Cypress.browser.name);
 
 describe('Cross-Browser Support', () => {
   // FR-001-AC1, FR-001-AC3

@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 describe('API Authentication Tests', () => {
-  const apiBaseUrl = Cypress.env('API_BASE_URL') || 'http://localhost:5000/api';
+  const apiBaseUrl = Cypress.expose('API_BASE_URL') || 'http://localhost:5000/api';
 
   // ---------------------------------------------------------------------------
   // Test Case 1: Successful Login with Valid Credentials
