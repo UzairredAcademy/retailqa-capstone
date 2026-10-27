@@ -2,45 +2,13 @@
 // Run each browser in turn:  npm run test:ui:chrome | test:ui:firefox | test:ui:edge
 // A test that targets a browser is skipped (pending) in the others. Set CYPRESS_xbrAny=true to run all
 // of them in whatever browser is being used.
-import { OrderDetailPage } from '../support/pages/OrderDetailPage';
-import { Nav } from '../support/pages/Nav';
-import { checkOrderTotals, loginAndCheckSession } from '../support/flows';
+import { OrderDetailPage } from '../../support/pages/OrderDetailPage';
+import { Nav } from '../../support/pages/Nav';
 
 const order = new OrderDetailPage();
 const nav = new Nav();
 
-/** True when the current browser is one of the given names (or xbrAny is set). */
-const runsIn = (...names) => Boolean(Cypress.env('xbrAny')) || names.includes(Cypress.browser.name);
-
 describe('Cross-Browser Support', () => {
-  // FR-001-AC1, FR-001-AC3
-  it('T-UI-XBR-001: Login and session persistence work on Chrome', function () {
-    if (!runsIn('chrome', 'chromium')) this.skip();
-    cy.log(`Browser: ${Cypress.browser.displayName} ${Cypress.browser.version}`);
-    loginAndCheckSession('customer1');
-  });
-
-  // FR-001-AC1, FR-001-AC3
-  it('T-UI-XBR-003: Login and session persistence work on Edge', function () {
-    if (!runsIn('edge')) this.skip();
-    cy.log(`Browser: ${Cypress.browser.displayName} ${Cypress.browser.version}`);
-    loginAndCheckSession('customer1');
-  });
-
-  // FR-002-AC2
-  it('T-UI-XBR-004: Order total calculation is correct on Firefox', function () {
-    if (!runsIn('firefox')) this.skip();
-    cy.loginAs('customer1');
-    checkOrderTotals();
-  });
-
-  // FR-002-AC2
-  it('T-UI-XBR-005: Order total calculation is correct on Edge', function () {
-    if (!runsIn('edge')) this.skip();
-    cy.loginAs('customer1');
-    checkOrderTotals();
-  });
-
   // FR-004-AC2, FR-004-AC3
   it('T-UI-XBR-006: Tracking page renders correctly at 1920x1080 and 1366x768', () => {
     cy.loginAs('customer1');
