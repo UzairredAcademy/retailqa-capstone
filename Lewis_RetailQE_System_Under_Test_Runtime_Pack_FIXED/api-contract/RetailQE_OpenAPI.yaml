@@ -2,176 +2,367 @@ openapi: 3.0.3
 info:
   title: RetailQE Training API
   version: 1.0.0
-  description: Synthetic retail API supplied for the Lewis RetailQE capstone.
+  description: |
+    Synthetic retail REST API for the Lewis RetailQE capstone. All endpoints
+    and records are for training use. Authentication tokens are returned by
+    login but are not required by the other endpoints.
 servers:
-  - url: http://localhost:4000/api
+  - url: http://localhost:4000
+    description: Local Docker runtime
+tags:
+  - name: System
+  - name: Authentication
+  - name: Products
+  - name: Customers
+  - name: Orders
+  - name: Payments
+  - name: Shipments
+  - name: Returns
+  - name: Dashboard
 paths:
-  /auth/login:
+  /health:
+    get:
+      tags: [System]
+      summary: Check API and database availability
+      responses:
+        '200':
+          description: API and database are available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+        '503':
+          description: Database is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: database unavailable }
+                  message: { type: string }
+
+  /api/auth/login:
     post:
+      tags: [Authentication]
       summary: Authenticate a test user
       requestBody:
         required: true
         content:
           application/json:
             schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token, user]
+                properties:
+                  token:
+                    type: string
+                    description: Synthetic token; it is not required by other endpoints.
+                  user:
+                    type: object
+                    properties:
+                      userId: { type: integer }
+                      customerId: { type: integer, nullable: true }
+                      email: { type: string, format: email }
+                      role: { type: string }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Return a successful logout response
+      description: This synthetic endpoint returns HTTP 204 and does not invalidate server-side tokens.
+      responses:
+        '204':
+          description: Logout completed
+  /api/auth/password-reset:
+    post:
+      tags: [Authentication]
+      summary: Request a synthetic password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
               type: object
-              required: [email, password]
+              required: [email]
               properties:
                 email: { type: string, format: email }
-                password: { type: string }
       responses:
-        '200': { description: Login successful }
-        '401': { description: Invalid credentials }
-  /products:
+        '200':
+          description: Generic response that does not reveal whether the account exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/products:
     get:
-      summary: List active products and stock
+      tags: [Products]
+      summary: List active products and available stock
       responses:
-        '200': { description: Product list }
-  /customers/{customerId}:
-    get:
-      summary: Get customer profile
-      parameters:
-        - in: path
-          name: customerId
-          required: true
-          schema: { type: integer }
-      responses:
-        '200': { description: Customer profile }
-    put:
-      summary: Update customer profile
-      parameters:
-        - in: path
-          name: customerId
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                fullName: { type: string }
-                email: { type: string }
-                phone: { type: string }
-                address: { type: string }
-      responses:
-        '200': { description: Updated customer }
-  /orders:
-    get:
-      summary: List orders with optional filters
-      parameters:
-        - in: query
-          name: customerId
-          schema: { type: integer }
-        - in: query
-          name: status
-          schema: { type: string }
-        - in: query
-          name: from
-          schema: { type: string, format: date }
-        - in: query
-          name: to
-          schema: { type: string, format: date }
-        - in: query
-          name: minPrice
-          schema: { type: number }
-        - in: query
-          name: maxPrice
-          schema: { type: number }
-      responses:
-        '200': { description: Orders }
-    post:
-      summary: Create a retail order
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [customerId, address, items]
-              properties:
-                customerId: { type: integer }
-                address: { type: string }
-                couponCode: { type: string, nullable: true }
+        '200':
+          description: Active products
+          content:
+            application/json:
+              schema:
+                type: array
                 items:
-                  type: array
-                  minItems: 1
-                  items:
-                    type: object
-                    required: [productId, quantity]
-                    properties:
-                      productId: { type: integer }
-                      quantity: { type: integer, minimum: 1 }
-      responses:
-        '201': { description: Order created }
-        '400': { description: Validation failure }
-  /orders/{orderId}:
+                  $ref: '#/components/schemas/Product'
+
+  /api/customers/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
     get:
-      summary: Get order details
-      parameters:
-        - in: path
-          name: orderId
-          required: true
-          schema: { type: integer }
+      tags: [Customers]
+      summary: Get a customer profile
       responses:
-        '200': { description: Order details }
+        '200':
+          description: Customer profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/NotFound'
     put:
-      summary: Modify an unpaid order
-      parameters:
-        - in: path
-          name: orderId
-          required: true
-          schema: { type: integer }
-      responses:
-        '200': { description: Order updated }
-        '409': { description: Order cannot be modified }
-  /orders/{orderId}/cancel:
-    post:
-      summary: Cancel an order
-      parameters:
-        - in: path
-          name: orderId
-          required: true
-          schema: { type: integer }
-      responses:
-        '200': { description: Order cancelled }
-  /payments:
-    post:
-      summary: Process synthetic payment
+      tags: [Customers]
+      summary: Update customer profile fields
+      description: Only fullName, email, and address are updated by this endpoint.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [orderId, cardNumber, expiry, cvv]
               properties:
-                orderId: { type: integer }
-                cardNumber: { type: string }
-                expiry: { type: string }
-                cvv: { type: string }
+                fullName: { type: string, maxLength: 150 }
+                email: { type: string, format: email, maxLength: 150 }
+                address: { type: string, maxLength: 250 }
       responses:
-        '201': { description: Payment processed }
-        '402': { description: Payment declined }
-  /shipments/order/{orderId}:
+        '200':
+          description: Updated customer profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/orders:
     get:
-      summary: Get shipment for an order
+      tags: [Orders]
+      summary: List orders with optional filters and pagination
       parameters:
-        - in: path
-          name: orderId
-          required: true
+        - name: customerId
+          in: query
           schema: { type: integer }
+        - name: status
+          in: query
+          schema: { type: string }
+        - name: from
+          in: query
+          description: Include orders created on or after this date.
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          description: Accepted for compatibility but currently does not filter results.
+          schema: { type: string, format: date }
+        - name: minPrice
+          in: query
+          schema: { type: number, format: float, minimum: 0 }
+        - name: maxPrice
+          in: query
+          schema: { type: number, format: float, minimum: 0 }
+        - name: page
+          in: query
+          description: 1-based page number.
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: pageSize
+          in: query
+          description: Page size is capped at 50.
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
       responses:
-        '200': { description: Shipment details }
-  /shipments/{shipmentId}/status:
+        '200':
+          description: Orders sorted by creation date, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+    post:
+      tags: [Orders]
+      summary: Create a retail order and reserve stock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/orders/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Orders]
+      summary: Get order details, items, payment, and shipment
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Order'
+                  - type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/OrderItem'
+                      payment:
+                        allOf:
+                          - $ref: '#/components/schemas/Payment'
+                        nullable: true
+                      shipment:
+                        allOf:
+                          - $ref: '#/components/schemas/Shipment'
+                        nullable: true
+        '404':
+          $ref: '#/components/responses/NotFound'
     put:
+      tags: [Orders]
+      summary: Modify an unpaid order
+      description: If items are omitted, only the address is updated.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderRequest'
+      responses:
+        '200':
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Paid orders cannot be modified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/orders/{id}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      tags: [Orders]
+      summary: Cancel an unpaid order
+      responses:
+        '200':
+          description: Order cancelled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  orderId: { type: integer }
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Paid orders cannot be cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/payments:
+    post:
+      tags: [Payments]
+      summary: Process a synthetic card payment
+      description: A declined synthetic payment returns HTTP 402.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '201':
+          description: Payment approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '402':
+          description: Payment declined
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/shipments/order/{orderId}:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema: { type: integer }
+    get:
+      tags: [Shipments]
+      summary: Get the shipment for an order
+      responses:
+        '200':
+          description: Shipment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/shipments/{id}/status:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    put:
+      tags: [Shipments]
       summary: Update synthetic shipment status
-      parameters:
-        - in: path
-          name: shipmentId
-          required: true
-          schema: { type: integer }
       requestBody:
         required: true
         content:
@@ -180,12 +371,26 @@ paths:
               type: object
               required: [status]
               properties:
-                status: { type: string, enum: [Preparing, Shipped, Delivered] }
+                status:
+                  type: string
+                  enum: [Preparing, Shipped, Delivered]
       responses:
-        '200': { description: Shipment updated }
-  /returns:
+        '200':
+          description: Updated shipment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/returns:
     post:
-      summary: Request a return for a delivered order
+      tags: [Returns]
+      summary: Request a return for a recently delivered order
+      description: Returns are limited to delivered orders within the 45-day return window.
       requestBody:
         required: true
         content:
@@ -195,17 +400,188 @@ paths:
               required: [orderId, reason]
               properties:
                 orderId: { type: integer }
-                reason: { type: string }
+                reason: { type: string, maxLength: 300 }
       responses:
-        '201': { description: Return created }
-        '400': { description: Return not allowed }
-  /dashboard/{customerId}:
+        '201':
+          description: Return created and refund issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Return'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: A return already exists for this order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/dashboard/{customerId}:
+    parameters:
+      - name: customerId
+        in: path
+        required: true
+        schema: { type: integer }
     get:
-      summary: Customer dashboard summary
-      parameters:
-        - in: path
-          name: customerId
-          required: true
-          schema: { type: integer }
+      tags: [Dashboard]
+      summary: Get a customer's dashboard summary
       responses:
-        '200': { description: Dashboard data }
+        '200':
+          description: Customer, order counts, and ten most recent orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customer:
+                    $ref: '#/components/schemas/Customer'
+                  counts:
+                    type: object
+                    properties:
+                      total: { type: integer }
+                      paid: { type: integer, nullable: true }
+                      cancelled: { type: integer, nullable: true }
+                  orders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+  responses:
+    BadRequest:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Requested record was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        message: { type: string }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password }
+    Product:
+      type: object
+      properties:
+        ProductId: { type: integer }
+        SKU: { type: string }
+        Name: { type: string }
+        Price: { type: number, format: float }
+        StockQuantity: { type: integer }
+        IsActive: { type: boolean }
+    Customer:
+      type: object
+      properties:
+        CustomerId: { type: integer }
+        FullName: { type: string }
+        Email: { type: string, format: email }
+        Phone: { type: string }
+        Address: { type: string }
+    Order:
+      type: object
+      properties:
+        OrderId: { type: integer }
+        CustomerId: { type: integer }
+        CustomerName: { type: string }
+        Status: { type: string }
+        Subtotal: { type: number, format: float }
+        TaxAmount: { type: number, format: float }
+        DiscountAmount: { type: number, format: float }
+        Total: { type: number, format: float }
+        CouponCode: { type: string, nullable: true }
+        Address: { type: string }
+        CreatedAt: { type: string, format: date-time }
+        UpdatedAt: { type: string, format: date-time }
+    OrderItem:
+      type: object
+      properties:
+        OrderItemId: { type: integer }
+        OrderId: { type: integer }
+        ProductId: { type: integer }
+        Quantity: { type: integer }
+        UnitPrice: { type: number, format: float }
+        LineTotal: { type: number, format: float }
+        SKU: { type: string }
+        Name: { type: string }
+    CreateOrderRequest:
+      type: object
+      required: [customerId, address, items]
+      properties:
+        customerId: { type: integer }
+        address: { type: string }
+        couponCode: { type: string, nullable: true }
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/OrderItemRequest'
+    UpdateOrderRequest:
+      type: object
+      properties:
+        address: { type: string }
+        couponCode: { type: string, nullable: true }
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemRequest'
+    OrderItemRequest:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId: { type: integer }
+        quantity: { type: integer, minimum: 1 }
+    PaymentRequest:
+      type: object
+      required: [orderId, cardNumber, expiry, cvv]
+      properties:
+        orderId: { type: integer }
+        cardNumber: { type: string, pattern: '^\d{16}$' }
+        expiry: { type: string, pattern: '^\d{2}/\d{2}$' }
+        cvv: { type: string, pattern: '^\d{3}$' }
+    Payment:
+      type: object
+      properties:
+        PaymentId: { type: integer }
+        OrderId: { type: integer }
+        Amount: { type: number, format: float }
+        Status: { type: string }
+        TransactionRef: { type: string }
+        CreatedAt: { type: string, format: date-time }
+    Shipment:
+      type: object
+      properties:
+        ShipmentId: { type: integer }
+        OrderId: { type: integer }
+        TrackingNumber: { type: string }
+        Status: { type: string, enum: [Preparing, Shipped, Delivered] }
+        CreatedAt: { type: string, format: date-time }
+        DeliveredAt: { type: string, format: date-time, nullable: true }
+    Return:
+      type: object
+      properties:
+        ReturnId: { type: integer }
+        OrderId: { type: integer }
+        Reason: { type: string }
+        Status: { type: string }
+        RefundAmount: { type: number, format: float }
+        CreatedAt: { type: string, format: date-time }

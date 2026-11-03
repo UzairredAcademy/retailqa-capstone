@@ -174,8 +174,20 @@ app.post('/api/orders/:id/cancel', async (req,res) => {
   if (!order) return res.status(404).json({message:'Order not found.'})
   const paid=(await query("SELECT COUNT(*) count FROM Payments WHERE OrderId=@id AND Status='Approved'",{id})).recordset[0].count
   if (paid>0) return res.status(409).json({message:'Paid orders cannot be cancelled.'})
-  await query("UPDATE Orders SET Status='Cancelled',UpdatedAt=SYSUTCDATETIME() WHERE OrderId=@id",{id})
-  res.json({message:'Order cancelled.',orderId:id})
+
+  const p=await getPool(); const tx=new sql.Transaction(p)
+  try {
+    await tx.begin()
+    const items=(await new sql.Request(tx).input('id',id).query('SELECT ProductId,Quantity FROM OrderItems WHERE OrderId=@id')).recordset
+    for (const item of items) {
+      const rq=new sql.Request(tx); rq.input('pid',item.ProductId); rq.input('qty',item.Quantity); rq.input('id',id)
+      await rq.query("UPDATE Products SET StockQuantity=StockQuantity+@qty WHERE ProductId=@pid; INSERT INTO InventoryLedger(ProductId,OrderId,ChangeQuantity,Reason) VALUES(@pid,@id,@qty,'Order cancelled - stock released')")
+    }
+    const rq=new sql.Request(tx); rq.input('id',id)
+    await rq.query("UPDATE Orders SET Status='Cancelled',UpdatedAt=SYSUTCDATETIME() WHERE OrderId=@id; INSERT INTO AuditLog(EntityType,EntityId,Action,Details) VALUES('Order',@id,'Cancelled','Order cancelled and stock released')")
+    await tx.commit()
+    res.json({message:'Order cancelled.',orderId:id})
+  } catch(e) { try{await tx.rollback()}catch{}; res.status(400).json({message:e.message}) }
 })
 
 app.post('/api/payments', async (req,res) => {

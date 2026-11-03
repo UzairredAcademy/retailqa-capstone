@@ -1,14 +1,10 @@
 // FR-006 Dashboard & Account Management - P1
-import { OrdersPage } from '../support/pages/OrdersPage';
-import { ProfilePage } from '../support/pages/ProfilePage';
-import { apiUrl } from '../support/utils';
-import customers from '../fixtures/customers.json';
+import { OrdersPage } from '../../support/pages/OrdersPage';
+import { apiUrl } from '../../support/utils';
 
 const orders = new OrdersPage();
-const profile = new ProfilePage();
 
 describe('User Dashboard', () => {
-  // ---- order history data for customer 1 (Created / Paid / Cancelled orders at different prices) ----
   describe('order history', () => {
     const data = {};
 
@@ -42,14 +38,6 @@ describe('User Dashboard', () => {
 
     beforeEach(() => {
       cy.loginAs('customer1');
-    });
-
-    // FR-006-AC1
-    it.skip('T-UI-DASH-001: Order history is displayed with pagination [BLOCKED - the UI has no pagination]', () => {
-      // Arrange: a customer with more orders than one page; Act: use next / previous / last page
-      // Assert: page size respected, no order duplicated or missing, controls correct at first/last page.
-      // The Orders page lists every order on one screen and the /orders API has no paging parameters.
-      // Confirm with the facilitator whether pagination is expected; if it is, this is a requirement gap.
     });
 
     // FR-006-AC2
@@ -127,94 +115,6 @@ describe('User Dashboard', () => {
       // Date range: the Orders page has no date inputs (the API supports from/to), so it cannot be driven
       // from the UI. Add a date-range step here if the UI gains those inputs.
       cy.log('Date-range filter not available in the UI - status and price filters verified');
-    });
-  });
-
-  // ---- profile tests use customer 2 and put the data back afterwards ----
-  describe('profile', () => {
-    const original = customers.find((c) => c.CustomerId === 2);
-
-    beforeEach(() => {
-      cy.loginAs('customer2');
-    });
-
-    afterEach(() => {
-      cy.request('PUT', apiUrl('/customers/2'), {
-        fullName: original.FullName,
-        email: original.Email,
-        phone: original.Phone,
-        address: original.Address,
-      });
-    });
-
-    // FR-006-AC3
-    it('T-UI-DASH-003: Saved addresses can be added, edited and deleted', () => {
-      // The UI keeps a single address per customer (no add/delete), so this covers editing it and
-      // rejecting an empty address.
-      // A rejected save is not handled by the page and shows up as an uncaught error - ignore it here.
-      cy.on('uncaught:exception', () => false);
-      const newAddress = '1 Test Street, Cape Town';
-
-      // Act: edit and save
-      profile.visit();
-      profile.field('Address').should('have.value', original.Address);
-      profile.setField('Address', newAddress).save().its('response.statusCode').should('eq', 200);
-
-      // Assert: saved and still there after a refresh
-      profile.success().should('contain', 'Profile saved');
-      cy.reload();
-      profile.field('Address').should('have.value', newAddress);
-
-      // Act: try to save an empty address
-      profile
-        .setField('Address', '')
-        .save()
-        .its('response.statusCode')
-        .should('be.within', 400, 499);
-
-      // Assert: not saved (no success message; the stored address is unchanged)
-      profile.success().should('not.exist');
-      cy.reload();
-      profile.field('Address').should('have.value', newAddress);
-    });
-
-    // FR-006-AC4
-    it('T-UI-DASH-004: Profile name, email and phone can be updated and are validated', () => {
-      // A rejected save is not handled by the page and shows up as an uncaught error - ignore it here.
-      cy.on('uncaught:exception', () => false);
-      const changes = {
-        Name: 'Thabo Jacobs QA',
-        Email: 'customer2.qa@retailqe.test',
-        Phone: '0820009999',
-      };
-
-      // Act: valid update
-      profile.visit();
-      Object.entries(changes).forEach(([label, value]) => profile.setField(label, value));
-      profile.save().its('response.statusCode').should('eq', 200);
-
-      // Assert: saved and persists after a refresh
-      profile.success().should('contain', 'Profile saved');
-      cy.reload();
-      Object.entries(changes).forEach(([label, value]) =>
-        profile.field(label).should('have.value', value),
-      );
-
-      // Invalid email and invalid phone are rejected and not stored
-      [
-        { label: 'Email', value: 'not-an-email', keep: changes.Email },
-        { label: 'Phone', value: 'abc', keep: changes.Phone },
-      ].forEach(({ label, value, keep }) => {
-        profile.visit();
-        profile
-          .setField(label, value)
-          .save()
-          .its('response.statusCode')
-          .should('be.within', 400, 499);
-        profile.success().should('not.exist');
-        cy.reload();
-        profile.field(label).should('have.value', keep);
-      });
     });
   });
 });

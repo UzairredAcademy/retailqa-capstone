@@ -54,11 +54,12 @@ After startup:
 
 - Web Application: `http://localhost:5173`
 - API: `http://localhost:4000/api`
+- Interactive Swagger UI: `http://localhost:4000/api-docs`
 - API Health Check: `http://localhost:4000/health`
 - SQL Server: `localhost,1433`
 - Database: `RetailQEDb`
 
-The OpenAPI contract is located at:
+The OpenAPI contract is served by Swagger UI and is located at:
 
 `api-contract/RetailQE_OpenAPI.yaml`
 
