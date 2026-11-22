@@ -15,19 +15,25 @@ Requirements are FR-001 to FR-007 (37 acceptance criteria). Every test is traced
 
 ## Contents
 
-- [System under test](#system-under-test)
-- [Prerequisites](#prerequisites)
-- [Setup](#setup)
-- [Running the tests](#running-the-tests)
-- [Project structure](#project-structure)
-- [Test coverage](#test-coverage)
-- [End-to-end scenarios](#end-to-end-scenarios)
-- [Test data and cleanup](#test-data-and-cleanup)
-- [Reports and evidence](#reports-and-evidence)
-- [Latest results](#latest-results)
-- [Known limitations of the system under test](#known-limitations-of-the-system-under-test)
-- [Troubleshooting](#troubleshooting)
-- [Team](#team)
+- [retailqa-capstone](#retailqa-capstone)
+  - [Contents](#contents)
+  - [System under test](#system-under-test)
+  - [Prerequisites](#prerequisites)
+  - [Setup](#setup)
+    - [Configuration](#configuration)
+  - [Running the tests](#running-the-tests)
+    - [Cypress (UI and end-to-end)](#cypress-ui-and-end-to-end)
+    - [Postman (API)](#postman-api)
+    - [SQL validation](#sql-validation)
+  - [Project structure](#project-structure)
+  - [Test coverage](#test-coverage)
+  - [End-to-end scenarios](#end-to-end-scenarios)
+  - [Test data and cleanup](#test-data-and-cleanup)
+  - [Reports and evidence](#reports-and-evidence)
+  - [Latest results](#latest-results)
+  - [Known limitations of the system under test](#known-limitations-of-the-system-under-test)
+  - [Troubleshooting](#troubleshooting)
+  - [Team](#team)
 
 ## System under test
 
@@ -188,16 +194,16 @@ Specs share a `state` object between steps, so run each spec as a whole file rat
 
 ## Latest results
 
-Results as recorded in the test case workbook on 22 November 2026:
+Results as recorded in the test case workbook on 22 November 2026 (61 pass, 38 fail, 6 blocked):
 
 | Layer | Pass | Fail | Blocked | Not run |
 |---|---|---|---|---|
 | Cypress (UI) | 26 | 14 | 0 | 0 |
 | Postman (API) | 21 | 13 | 6 | 0 |
-| SQL (DB) | 6 | 6 | 0 | 8 |
+| SQL (DB) | 13 | 7 | 0 | 0 |
 | End to end | 1 | 4 | 0 | 0 |
 
-The exit criteria in the brief (UI pass rate 90%, API, SQL and E2E pass rate 100%) are **not met**; the failures are real defects in the application, logged in Jira. The eight SQL payment and shipment integrity tests are still to be run.
+The exit criteria in the brief (UI pass rate 90%, API, SQL and E2E pass rate 100%) are **not met**; the failures are real defects in the application, logged in Jira. All 105 tests have now been run.
 
 Notable defects found:
 
