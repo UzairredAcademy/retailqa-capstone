@@ -1,9 +1,7 @@
-[
- {
+{
   "_note": "SAVE10 (10% off the item subtotal) is the only coupon documented in the pack. Ask the facilitator for expired/used codes.",
   "valid": "SAVE10",
   "invalid": "INVALID10",
   "blank": "",
   "wrongCase": "save10"
- }
-]
+}

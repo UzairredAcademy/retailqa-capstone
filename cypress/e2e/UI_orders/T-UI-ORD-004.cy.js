@@ -46,7 +46,7 @@ describe('Order Management', () => {
                 Math.abs(t.tax - taxBefore) <= 0.01 || Math.abs(t.tax - taxAfter) <= 0.01,
                 `tax ${t.tax} is 15% of the subtotal (${taxBefore}) or of the discounted subtotal (${taxAfter})`,
               ).to.eq(true);
-              expect(t.total, 'total = subtotal - discount + tax').to.be.closeTo(
+              expect(t.total, 'total = subtotal - SAVE10 + tax').to.be.closeTo(
                 round2(t.subtotal - t.discount + t.tax),
                 0.01,
               );
