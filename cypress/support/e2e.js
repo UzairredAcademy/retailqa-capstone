@@ -10,7 +10,7 @@ Cypress.on('uncaught:exception', (err) => {
   if (/NetworkError when attempting to fetch resource/.test(err.message)) return false;
 });
 afterEach(() => {
-  if (Cypress.env('keepData')) return;
+  if (Cypress.expose('keepData')) return;
   drainTrackedOrders().forEach((id) => {
     cy.request({ url: apiUrl(`/orders/${id}`), failOnStatusCode: false }).then((res) => {
       if (res.status === 200 && res.body && res.body.Status === 'Created') {
