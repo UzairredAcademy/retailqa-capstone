@@ -4,6 +4,11 @@ import { apiUrl, drainTrackedOrders } from './utils';
 // Clean-up: cancel the unpaid orders a test created so product stock is restored for the next test.
 // (Paid orders cannot be cancelled - the facilitator's RESET_SYSTEM script restores the seed data.)
 // Set CYPRESS_keepData=true to leave everything in place for inspection.
+// Firefox rejects the app's in-flight fetch when the test navigates away mid-request.
+// Ignore only that cancelled-request message; every other app error still fails the test.
+Cypress.on('uncaught:exception', (err) => {
+  if (/NetworkError when attempting to fetch resource/.test(err.message)) return false;
+});
 afterEach(() => {
   if (Cypress.expose('keepData')) return;
   drainTrackedOrders().forEach((id) => {

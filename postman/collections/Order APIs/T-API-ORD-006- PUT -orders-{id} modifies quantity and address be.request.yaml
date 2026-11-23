@@ -1,0 +1,24 @@
+$kind: http-request
+name: "T-API-ORD-006: PUT /orders/{id} modifies quantity and address before payment"
+description: |-
+  Steps:
+  1. Create an unpaid order
+  2. PUT a new quantity
+  3. PUT a new address
+  4. GET the order
+
+  Expected: 200 OK; the GET shows the new quantity, recalculated totals and the new address
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-002-AC4 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-ORD-006: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 6000

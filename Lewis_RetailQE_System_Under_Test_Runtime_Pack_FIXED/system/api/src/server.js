@@ -108,7 +108,7 @@ app.post('/api/orders', async (req,res) => {
       resolved.push({product,quantity:Number(item.quantity),line})
     }
     const tax=money(subtotal*0.15)
-    const discount=money(couponCode==='SAVE10' ? subtotal*0.15 : 0)
+    const discount=money(couponCode==='SAVE10' ? subtotal*0.10 : 0)
     const total=money(subtotal+tax-discount)
     let rq=new sql.Request(tx)
     rq.input('customerId',Number(customerId)); rq.input('subtotal',subtotal); rq.input('tax',tax); rq.input('discount',discount); rq.input('total',total); rq.input('coupon',couponCode||null); rq.input('address',address)
@@ -160,7 +160,7 @@ app.put('/api/orders/:id', async (req,res) => {
       await rq.query("INSERT INTO OrderItems(OrderId,ProductId,Quantity,UnitPrice,LineTotal) VALUES(@id,@pid,@qty,@price,@line); UPDATE Products SET StockQuantity=StockQuantity-@qty WHERE ProductId=@pid; INSERT INTO InventoryLedger(ProductId,OrderId,ChangeQuantity,Reason) VALUES(@pid,@id,-@qty,'Order modification reserve')")
     }
     const coupon=req.body.couponCode ?? order.CouponCode
-    const tax=money(subtotal*0.15); const discount=money(coupon==='SAVE10'?subtotal*0.15:0); const total=money(subtotal+tax-discount)
+    const tax=money(subtotal*0.15); const discount=money(coupon==='SAVE10'?subtotal*0.10:0); const total=money(subtotal+tax-discount)
     rq=new sql.Request(tx); rq.input('id',id); rq.input('address',address); rq.input('subtotal',subtotal); rq.input('tax',tax); rq.input('discount',discount); rq.input('total',total); rq.input('coupon',coupon)
     await rq.query('UPDATE Orders SET Address=@address,Subtotal=@subtotal,TaxAmount=@tax,DiscountAmount=@discount,Total=@total,CouponCode=@coupon,UpdatedAt=SYSUTCDATETIME() WHERE OrderId=@id')
     await tx.commit()
@@ -198,6 +198,19 @@ app.get('/api/shipments/order/:orderId', async (req,res) => {
   const r=await query('SELECT * FROM Shipments WHERE OrderId=@id',{id:Number(req.params.orderId)})
   if (!r.recordset[0]) return res.status(404).json({message:'Shipment not found.'})
   res.json(r.recordset[0])
+})
+
+app.get('/api/tracking/:trackingNumber', async (req,res) => {
+  const trackingNumber = String(req.params.trackingNumber || '').trim()
+  if (!trackingNumber) return res.status(400).json({message:'Tracking number is required.'})
+
+  const shipment = (await query('SELECT * FROM Shipments WHERE TrackingNumber=@trackingNumber',{trackingNumber})).recordset[0]
+  if (!shipment) return res.status(404).json({message:'Shipment not found.'})
+
+  const order = (await query('SELECT * FROM Orders WHERE OrderId=@id',{id:shipment.OrderId})).recordset[0] || null
+  const auditHistory = (await query("SELECT Action AS status, CreatedAt AS timestamp, Details AS detail FROM AuditLog WHERE EntityType='Shipment' AND EntityId=@id ORDER BY CreatedAt ASC",{id:shipment.ShipmentId})).recordset
+  const history = auditHistory.length ? auditHistory : [{ status: shipment.Status, timestamp: shipment.CreatedAt, detail: 'Shipment created' }]
+  res.json({ trackingNumber, shipment, order, history })
 })
 
 app.put('/api/shipments/:id/status', async (req,res) => {

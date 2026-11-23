@@ -1,0 +1,24 @@
+$kind: http-request
+name: "T-API-ERR-004: Profile and saved-address endpoints validate input and persist valid changes"
+description: |-
+  Steps:
+  1. PUT a valid profile update and GET the profile
+  2. PUT an invalid email and an invalid phone
+  3. POST a valid address and GET the list
+  4. POST an address with a missing mandatory field
+
+  Expected: Valid changes return 200/201 and are visible on GET; invalid input returns 400 with field errors and nothing is saved
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-006-AC3, FR-006-AC4 | Positive / Negative
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-ERR-004: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 4000

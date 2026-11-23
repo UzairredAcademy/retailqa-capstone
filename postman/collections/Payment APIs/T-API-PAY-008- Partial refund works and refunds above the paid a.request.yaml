@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-PAY-008: Partial refund works and refunds above the paid amount are rejected"
+description: |-
+  Steps:
+  1. POST a partial refund
+  2. POST a second refund that would exceed the paid amount
+  3. GET refunds
+
+  Expected: The partial refund succeeds; the over-refund is rejected with 400/409; total refunded never exceeds the amount paid
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-003-AC5 | Positive / Boundary
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-PAY-008: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 8000

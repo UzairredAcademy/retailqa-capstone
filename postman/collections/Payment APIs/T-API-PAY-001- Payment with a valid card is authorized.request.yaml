@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-PAY-001: Payment with a valid card is authorized"
+description: |-
+  Steps:
+  1. POST payment for an unpaid order with a valid sandbox card
+  2. GET the payment
+  3. GET the order
+
+  Expected: 200/201 with status Authorized/Settled; payment amount equals the order total; order status becomes Paid
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-003-AC2 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-PAY-001: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 1000

@@ -6,6 +6,12 @@ info:
 servers:
   - url: http://localhost:4000/api
 paths:
+  /health:
+    get:
+      summary: Check API health
+      responses:
+        '200': { description: Service healthy }
+        '503': { description: Database unavailable }
   /auth/login:
     post:
       summary: Authenticate a test user
@@ -22,6 +28,26 @@ paths:
       responses:
         '200': { description: Login successful }
         '401': { description: Invalid credentials }
+  /auth/logout:
+    post:
+      summary: Log out the current session
+      responses:
+        '204': { description: Logout successful }
+  /auth/password-reset:
+    post:
+      summary: Request a password reset email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '200': { description: Generic reset link response }
+        '400': { description: Email missing }
   /products:
     get:
       summary: List active products and stock
@@ -164,6 +190,17 @@ paths:
           schema: { type: integer }
       responses:
         '200': { description: Shipment details }
+  /tracking/{trackingNumber}:
+    get:
+      summary: Get shipment tracking status and history
+      parameters:
+        - in: path
+          name: trackingNumber
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Tracking status and history }
+        '404': { description: Shipment not found }
   /shipments/{shipmentId}/status:
     put:
       summary: Update synthetic shipment status

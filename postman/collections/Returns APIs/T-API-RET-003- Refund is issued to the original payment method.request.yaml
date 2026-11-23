@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-RET-003: Refund is issued to the original payment method"
+description: |-
+  Steps:
+  1. Complete the return
+  2. GET the refund
+  3. GET the original payment
+
+  Expected: The refund references the original payment id and method; no refund to a different method is possible
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-005-AC3 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-RET-003: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 3000

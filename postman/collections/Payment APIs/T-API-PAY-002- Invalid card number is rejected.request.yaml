@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-PAY-002: Invalid card number is rejected"
+description: |-
+  Steps:
+  1. POST a non-numeric number
+  2. POST a short number
+  3. POST a number that fails Luhn
+
+  Expected: 400/422 with a card-number validation error; no payment record created
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-003-AC1 | Negative
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-PAY-002: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 2000

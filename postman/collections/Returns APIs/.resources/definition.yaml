@@ -1,0 +1,2 @@
+$kind: collection
+description: "Returns APIs (P1). Preconditions: Valid auth token; delivered orders aged inside and outside 30 days"

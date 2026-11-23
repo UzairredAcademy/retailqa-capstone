@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-ERR-003: Requests for non-existent resources return 404 without leaking internals"
+description: |-
+  Steps:
+  1. GET an unknown order id
+  2. GET another customer's order id
+  3. GET an unknown route
+
+  Expected: 404 (or 403 for another user's order) with the standard error body; no stack trace or SQL in the response
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-002-AC7 | Negative
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-ERR-003: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 3000

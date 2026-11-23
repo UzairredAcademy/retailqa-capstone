@@ -1,0 +1,826 @@
+{
+  "info": {
+    "_postman_id": "e7830ebe-da00-438a-86be-f8c30999b5e2",
+    "name": "Capstone",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "57018217",
+    "_collection_link": "https://go.postman.co/collection/57018217-e7830ebe-da00-438a-86be-f8c30999b5e2?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Authentication API",
+      "item": [
+        {
+          "name": "T-API-AUTH-001",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "   {\r\n    \"email\": \"customer1@retailqe.test\",\r\n   \"password\": \"Pass123!\"\r\n   }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-AUTH-002",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// FR-001-AC2, FR-001-AC7 | Negative / Boundary\r\n// Seeded user customer3@retailqe.test (UserId 4) already has 5 failed attempts.\r\n// This request sends the CORRECT password; the account must be refused as locked.\r\nconst baseUrl = pm.variables.get('base_url');\r\n\r\nconst message = (res) => {\r\n  try {\r\n    const b = res.json();\r\n    return String(b.message || b.error || '');\r\n  } catch (e) {\r\n    return '';\r\n  }\r\n};\r\n\r\npm.test('T-API-AUTH-002: correct password on the locked account is refused (423/403)', function () {\r\n  pm.expect(pm.response.code, 'status').to.be.oneOf([423, 403]);\r\n});\r\n\r\npm.test('response gives a lockout message', function () {\r\n  pm.expect(message(pm.response)).to.match(/lock/i);\r\n});\r\n\r\npm.test('no token is issued for the locked account', function () {\r\n  pm.expect(pm.response.text()).to.not.include('\"token\"');\r\n});\r\n\r\npm.test('a different user (customer1) can still log in', function (done) {\r\n  pm.sendRequest(\r\n    {\r\n      url: baseUrl + '/auth/login',\r\n      method: 'POST',\r\n      header: { 'Content-Type': 'application/json' },\r\n      body: {\r\n        mode: 'raw',\r\n        raw: JSON.stringify({ email: 'customer1@retailqe.test', password: 'Pass123!' }),\r\n      },\r\n    },\r\n    function (err, res) {\r\n      try {\r\n        pm.expect(err, 'request error').to.be.null;\r\n        pm.expect(res.code, 'status').to.equal(200);\r\n        done();\r\n      } catch (e) {\r\n        done(e);\r\n      }\r\n    }\r\n  );\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"lockout-test@retailqe.test\",\r\n  \"password\": \"TestPass123!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}api/auth/login",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-AUTH-003",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// FR-001-AC5 | Positive\r\npm.test('T-API-AUTH-003: token worked on a protected endpoint before logout', function () {\r\n  pm.expect(Number(pm.environment.get('code_before_logout'))).to.equal(200);\r\n});\r\n\r\npm.test('POST /auth/logout returns 200 or 204', function () {\r\n  pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r\n});\r\n\r\npm.test('the same token is rejected after logout (401)', function (done) {\r\n  pm.sendRequest(\r\n    {\r\n      url: pm.environment.get('protected_url'),\r\n      method: 'GET',\r\n      header: { Authorization: 'Bearer ' + pm.environment.get('auth_token') },\r\n    },\r\n    (err, res) => {\r\n      try {\r\n        pm.expect(err, 'request error').to.be.null;\r\n        pm.expect(res.code).to.equal(401);\r\n        done();\r\n      } catch (e) {\r\n        done(e);\r\n      }\r\n    }\r\n  );\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Step 1-2: log in, store the token, and check it works before logout\r\nconst api = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\n\r\npm.sendRequest(\r\n  {\r\n    url: api + '/auth/login',\r\n    method: 'POST',\r\n    header: { 'Content-Type': 'application/json' },\r\n    body: {\r\n      mode: 'raw',\r\n      raw: JSON.stringify({ email: 'customer1@retailqe.test', password: 'Pass123!' }),\r\n    },\r\n  },\r\n  (err, res) => {\r\n    const body = res.json();\r\n    const protectedUrl = api + '/customers/' + body.user.customerId;\r\n    pm.environment.set('auth_token', body.token);\r\n    pm.environment.set('protected_url', protectedUrl);\r\n\r\n    pm.sendRequest(\r\n      { url: protectedUrl, method: 'GET', header: { Authorization: 'Bearer ' + body.token } },\r\n      (e, r) => pm.environment.set('code_before_logout', r.code)\r\n    );\r\n  }\r\n);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "    {\r\n      \"email\": \"customer2@retailqe.test\",\r\n      \"password\": \"Pass123!\"\r\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}api/auth/logout",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-AUTH-004",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Test data for T-API-AUTH-004\r\nconst setDefault = (key, value) => {\r\n  if (!pm.environment.get(key)) pm.environment.set(key, value);\r\n};\r\nsetDefault('reset_email', 'reset-test@retailqe.test');\r\npm.environment.set('unknown_email', 'nobody-' + Date.now() + '@retailqe.test');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// FR-001-AC6 | Positive / Negative\r\n// Request = password-reset for a known email. The script also checks an unknown email and a missing email.\r\nconst api = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst GENERIC = /if the account exists/i;\r\n\r\nconst messageOf = (res) => {\r\n  try {\r\n    const b = res.json();\r\n    return String(b.message || b.error || '');\r\n  } catch (e) {\r\n    return '';\r\n  }\r\n};\r\n\r\npm.test('T-API-AUTH-004: known email returns 200 with a generic reset message', function () {\r\n  pm.expect(pm.response.code, 'status').to.equal(200);\r\n  pm.expect(messageOf(pm.response)).to.match(GENERIC);\r\n});\r\n\r\npm.test('the response does not expose a reset token', function () {\r\n  const raw = pm.response.text().toLowerCase();\r\n  pm.expect(raw).to.not.include('token');\r\n});\r\n\r\nconst post = (payload, cb) =>\r\n  pm.sendRequest(\r\n    {\r\n      url: api + '/auth/password-reset',\r\n      method: 'POST',\r\n      header: { 'Content-Type': 'application/json' },\r\n      body: { mode: 'raw', raw: JSON.stringify(payload) },\r\n    },\r\n    cb\r\n  );\r\n\r\npost({ email: pm.environment.get('unknown_email') }, (err1, unknown) => {\r\n  post({}, (err2, missing) => {\r\n    pm.test('unknown email gets the same generic response (no account enumeration)', function () {\r\n      pm.expect(err1, 'request error').to.be.null;\r\n      pm.expect(unknown.code, 'status').to.equal(pm.response.code);\r\n      pm.expect(messageOf(unknown), 'message').to.equal(messageOf(pm.response));\r\n    });\r\n\r\n    pm.test('missing email is rejected with 400', function () {\r\n      pm.expect(err2, 'request error').to.be.null;\r\n      pm.expect(missing.code).to.equal(400);\r\n    });\r\n  });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{reset_email}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}api/auth/password-reset",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "auth",
+                "password-reset"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Shipments API",
+      "item": [
+        {
+          "name": "T-API-SHP-001",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-SHP-002",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\n// const pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\n// const asShip = d => Array.isArray(d) ? d[0] : d;\r\n// const parse = r => { try { return r.json(); } catch (e) { return null; } };\r\n// const call = (method, path, body, cb) => pm.sendRequest({\r\n//   url: base + path, method,\r\n//   header: { 'Content-Type': 'application/json' },\r\n//   body: body ? { mode: 'raw', raw: JSON.stringify(body) } : undefined\r\n// }, (e, r) => cb(e, r ? r.code : null, r ? parse(r) : null));\r\n// const newOrder = (pay, cb) => call('POST', '/orders',\r\n//   { customerId: 1, address: '12 Test Street, Johannesburg', couponCode: '', items: [{ productId: 1, quantity: 1 }] },\r\n//   (e, c, o) => {\r\n//     const b = (o && o.order) || o;\r\n//     const id = pick(b, /^orderid$/i) ?? pick(b, /^id$/i);\r\n//     if (e || !id) return console.error('Order create failed', c, o);\r\n//     if (!pay) return cb(id);\r\n//     call('POST', '/payments', { orderId: id, cardNumber: '4242424242424242', expiry: '12/30', cvv: '123' },\r\n//       (e2, c2) => (e2 || c2 >= 300) ? console.error('Payment failed', c2) : cb(id));\r\n//   });\r\n// const shipmentOf = (orderId, cb) => call('GET', '/shipments/order/' + orderId, null, (e, c, d) => cb(asShip(d)));\r\n// const makeShipment = cb => newOrder(true, oid => shipmentOf(oid, s => cb(pick(s, /^shipmentid$/i), oid)));\r\n// const setStatus = (id, status, cb, token) => pm.sendRequest({\r\n//   url: base + '/shipments/' + id + '/status', method: 'PUT',\r\n//   header: Object.assign({ 'Content-Type': 'application/json' }, token ? { Authorization: 'Bearer ' + token } : {}),\r\n//   body: { mode: 'raw', raw: JSON.stringify({ status }) }\r\n// }, (e, r) => cb(r ? r.code : null));\r\n\r\n// newOrder(false, id => pm.variables.set('order_id', id));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\npm.test('Shipment creation is rejected (400/409)', () =>\r\n  pm.expect(pm.response.code).to.be.oneOf([400, 409]));\r\npm.sendRequest(base + '/shipments/order/' + pm.variables.get('order_id'), (e, r) => {\r\n  pm.test('No shipment exists for the unpaid order', () => {\r\n    let d = null; try { d = r.code === 404 ? null : r.json(); } catch (x) {}\r\n    pm.expect(!d || (Array.isArray(d) && d.length === 0)).to.be.true;\r\n  });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"status\":\"Delivered\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/shipments/13/status",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "shipments",
+                "13",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-SHP-003",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst asShip = d => Array.isArray(d) ? d[0] : d;\r\nconst parse = r => { try { return r.json(); } catch (e) { return null; } };\r\nconst call = (method, path, body, cb) => pm.sendRequest({\r\n  url: base + path, method,\r\n  header: { 'Content-Type': 'application/json' },\r\n  body: body ? { mode: 'raw', raw: JSON.stringify(body) } : undefined\r\n}, (e, r) => cb(e, r ? r.code : null, r ? parse(r) : null));\r\nconst newOrder = (pay, cb) => call('POST', '/orders',\r\n  { customerId: 1, address: '12 Test Street, Johannesburg', couponCode: '', items: [{ productId: 1, quantity: 1 }] },\r\n  (e, c, o) => {\r\n    const b = (o && o.order) || o;\r\n    const id = pick(b, /^orderid$/i) ?? pick(b, /^id$/i);\r\n    if (e || !id) return console.error('Order create failed', c, o);\r\n    if (!pay) return cb(id);\r\n    call('POST', '/payments', { orderId: id, cardNumber: '4242424242424242', expiry: '12/30', cvv: '123' },\r\n      (e2, c2) => (e2 || c2 >= 300) ? console.error('Payment failed', c2) : cb(id));\r\n  });\r\nconst shipmentOf = (orderId, cb) => call('GET', '/shipments/order/' + orderId, null, (e, c, d) => cb(asShip(d)));\r\nconst makeShipment = cb => newOrder(true, oid => shipmentOf(oid, s => cb(pick(s, /^shipmentid$/i), oid)));\r\nconst setStatus = (id, status, cb, token) => pm.sendRequest({\r\n  url: base + '/shipments/' + id + '/status', method: 'PUT',\r\n  header: Object.assign({ 'Content-Type': 'application/json' }, token ? { Authorization: 'Bearer ' + token } : {}),\r\n  body: { mode: 'raw', raw: JSON.stringify({ status }) }\r\n}, (e, r) => cb(r ? r.code : null));\r\n\r\nnewOrder(true, a => {\r\n  pm.variables.set('order_id', a);\r\n  newOrder(true, b => pm.variables.set('order_id_2', b));\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst first = d => Array.isArray(d) ? d[0] : d;\r\nconst t1 = pick(first(pm.response.json()), /^trackingnumber$/i);\r\npm.sendRequest(base + '/shipments/order/' + pm.variables.get('order_id_2'), (e, r) => {\r\n  const t2 = pick(first(r.json()), /^trackingnumber$/i);\r\n  pm.test('Both tracking numbers are non-empty', () => {\r\n    pm.expect(t1).to.be.a('string').and.not.empty;\r\n    pm.expect(t2).to.be.a('string').and.not.empty;\r\n  });\r\n  pm.test('Format matches TRK-000000', () => {\r\n    pm.expect(t1).to.match(/^TRK-\\d{6}$/);\r\n    pm.expect(t2).to.match(/^TRK-\\d{6}$/);\r\n  });\r\n  pm.test('Tracking numbers are unique', () => pm.expect(t1).to.not.eql(t2));\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}api/shipments/order/{{order_id}}",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "shipments",
+                "order",
+                "{{order_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-SHP-004",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst asShip = d => Array.isArray(d) ? d[0] : d;\r\nconst parse = r => { try { return r.json(); } catch (e) { return null; } };\r\nconst call = (method, path, body, cb) => pm.sendRequest({\r\n  url: base + path, method,\r\n  header: { 'Content-Type': 'application/json' },\r\n  body: body ? { mode: 'raw', raw: JSON.stringify(body) } : undefined\r\n}, (e, r) => cb(e, r ? r.code : null, r ? parse(r) : null));\r\nconst newOrder = (pay, cb) => call('POST', '/orders',\r\n  { customerId: 1, address: '12 Test Street, Johannesburg', couponCode: '', items: [{ productId: 1, quantity: 1 }] },\r\n  (e, c, o) => {\r\n    const b = (o && o.order) || o;\r\n    const id = pick(b, /^orderid$/i) ?? pick(b, /^id$/i);\r\n    if (e || !id) return console.error('Order create failed', c, o);\r\n    if (!pay) return cb(id);\r\n    call('POST', '/payments', { orderId: id, cardNumber: '4242424242424242', expiry: '12/30', cvv: '123' },\r\n      (e2, c2) => (e2 || c2 >= 300) ? console.error('Payment failed', c2) : cb(id));\r\n  });\r\nconst shipmentOf = (orderId, cb) => call('GET', '/shipments/order/' + orderId, null, (e, c, d) => cb(asShip(d)));\r\nconst makeShipment = cb => newOrder(true, oid => shipmentOf(oid, s => cb(pick(s, /^shipmentid$/i), oid)));\r\nconst setStatus = (id, status, cb, token) => pm.sendRequest({\r\n  url: base + '/shipments/' + id + '/status', method: 'PUT',\r\n  header: Object.assign({ 'Content-Type': 'application/json' }, token ? { Authorization: 'Bearer ' + token } : {}),\r\n  body: { mode: 'raw', raw: JSON.stringify({ status }) }\r\n}, (e, r) => cb(r ? r.code : null));\r\n\r\nmakeShipment((sid, oid) => {\r\n  pm.variables.set('shipment_id', sid);\r\n  pm.variables.set('order_id', oid);\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst s = pm.response.json();\r\npm.test('200 OK', () => pm.response.to.have.status(200));\r\npm.test('Status is Shipped', () => pm.expect(pick(s, /^status$/i)).to.eql('Shipped'));\r\npm.sendRequest(base + '/tracking/' + pick(s, /^trackingnumber$/i), (e, r) => {\r\n  const h = r.json().history || [];\r\n  const st = h.map(x => pick(x, /^status$/i));\r\n  pm.test('History lists Preparing then Shipped, in order', () => {\r\n    const i = st.indexOf('Preparing'), j = st.lastIndexOf('Shipped');\r\n    pm.expect(i).to.be.at.least(0);\r\n    pm.expect(j).to.be.above(i);\r\n  });\r\n  pm.test('Shipped entry has a timestamp', () => {\r\n    const x = h.find(y => pick(y, /^status$/i) === 'Shipped');\r\n    pm.expect(Object.values(x || {}).some(v => /^\\d{4}-\\d{2}-\\d{2}T/.test(v))).to.be.true;\r\n  });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"status\": \"Shipped\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}api/shipments/{{shipment_id}}/status",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "shipments",
+                "{{shipment_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-SHP-005",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst asShip = d => Array.isArray(d) ? d[0] : d;\r\nconst parse = r => { try { return r.json(); } catch (e) { return null; } };\r\nconst call = (method, path, body, cb) => pm.sendRequest({\r\n  url: base + path, method,\r\n  header: { 'Content-Type': 'application/json' },\r\n  body: body ? { mode: 'raw', raw: JSON.stringify(body) } : undefined\r\n}, (e, r) => cb(e, r ? r.code : null, r ? parse(r) : null));\r\nconst newOrder = (pay, cb) => call('POST', '/orders',\r\n  { customerId: 1, address: '12 Test Street, Johannesburg', couponCode: '', items: [{ productId: 1, quantity: 1 }] },\r\n  (e, c, o) => {\r\n    const b = (o && o.order) || o;\r\n    const id = pick(b, /^orderid$/i) ?? pick(b, /^id$/i);\r\n    if (e || !id) return console.error('Order create failed', c, o);\r\n    if (!pay) return cb(id);\r\n    call('POST', '/payments', { orderId: id, cardNumber: '4242424242424242', expiry: '12/30', cvv: '123' },\r\n      (e2, c2) => (e2 || c2 >= 300) ? console.error('Payment failed', c2) : cb(id));\r\n  });\r\nconst shipmentOf = (orderId, cb) => call('GET', '/shipments/order/' + orderId, null, (e, c, d) => cb(asShip(d)));\r\nconst makeShipment = cb => newOrder(true, oid => shipmentOf(oid, s => cb(pick(s, /^shipmentid$/i), oid)));\r\nconst setStatus = (id, status, cb, token) => pm.sendRequest({\r\n  url: base + '/shipments/' + id + '/status', method: 'PUT',\r\n  header: Object.assign({ 'Content-Type': 'application/json' }, token ? { Authorization: 'Bearer ' + token } : {}),\r\n  body: { mode: 'raw', raw: JSON.stringify({ status }) }\r\n}, (e, r) => cb(r ? r.code : null));\r\n\r\n\r\nmakeShipment((d, dOrder) => setStatus(d, 'Shipped', () => setStatus(d, 'Delivered', () => {\r\n  pm.variables.set('delivered_shipment_id', d);\r\n  pm.variables.set('delivered_order_id', dOrder);\r\n  makeShipment((p1, p1Order) => {\r\n    pm.variables.set('prep_shipment_id', p1);\r\n    pm.variables.set('prep_order_id', p1Order);\r\n    makeShipment((p2, p2Order) => {\r\n      pm.variables.set('prep2_shipment_id', p2);\r\n      pm.variables.set('prep2_order_id', p2Order);\r\n      call('POST', '/auth/login',\r\n        { email: pm.variables.get('customer_email'), password: pm.variables.get('customer_password') },\r\n        (e, c, r) => pm.variables.set('customer_token', r && r.token));\r\n    });\r\n  });\r\n})));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst asShip = d => Array.isArray(d) ? d[0] : d;\r\nconst v = k => pm.variables.get(k);\r\nconst stat = (orderId, cb) => pm.sendRequest(base + '/shipments/order/' + orderId,\r\n  (e, r) => cb(pick(asShip(r.json()), /^status$/i)));\r\nconst setStatus = (id, status, cb, token) => pm.sendRequest({\r\n  url: base + '/shipments/' + id + '/status', method: 'PUT',\r\n  header: Object.assign({ 'Content-Type': 'application/json' }, token ? { Authorization: 'Bearer ' + token } : {}),\r\n  body: { mode: 'raw', raw: JSON.stringify({ status }) }\r\n}, (e, r) => cb(r ? r.code : null));\r\n\r\n// Step 1: Delivered -> Shipped\r\npm.test('Delivered > Shipped is rejected (400/409)', () =>\r\n  pm.expect(pm.response.code).to.be.oneOf([400, 409]));\r\nstat(v('delivered_order_id'), s => pm.test('Shipment is still Delivered', () => pm.expect(s).to.eql('Delivered')));\r\n\r\n// Step 2: Preparing -> Delivered (skipping Shipped)\r\nsetStatus(v('prep_shipment_id'), 'Delivered', code => {\r\n  pm.test('Preparing > Delivered is rejected (400/409)', () => pm.expect(code).to.be.oneOf([400, 409]));\r\n  stat(v('prep_order_id'), s => pm.test('Shipment is still Preparing', () => pm.expect(s).to.eql('Preparing')));\r\n});\r\n\r\n// Step 3: customer token tries to update status\r\nsetStatus(v('prep2_shipment_id'), 'Shipped', code => {\r\n  pm.test('Customer token is forbidden (403)', () => pm.expect(code).to.eql(403));\r\n  stat(v('prep2_order_id'), s => pm.test('Status is unchanged (Preparing)', () => pm.expect(s).to.eql('Preparing')));\r\n}, v('customer_token'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"status\": \"Shipped\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}api/shipments/{{delivered_shipment_id}}/status",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "shipments",
+                "{{delivered_shipment_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-SHP-006",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst asShip = d => Array.isArray(d) ? d[0] : d;\r\nconst parse = r => { try { return r.json(); } catch (e) { return null; } };\r\nconst call = (method, path, body, cb) => pm.sendRequest({\r\n  url: base + path, method,\r\n  header: { 'Content-Type': 'application/json' },\r\n  body: body ? { mode: 'raw', raw: JSON.stringify(body) } : undefined\r\n}, (e, r) => cb(e, r ? r.code : null, r ? parse(r) : null));\r\nconst newOrder = (pay, cb) => call('POST', '/orders',\r\n  { customerId: 1, address: '12 Test Street, Johannesburg', couponCode: '', items: [{ productId: 1, quantity: 1 }] },\r\n  (e, c, o) => {\r\n    const b = (o && o.order) || o;\r\n    const id = pick(b, /^orderid$/i) ?? pick(b, /^id$/i);\r\n    if (e || !id) return console.error('Order create failed', c, o);\r\n    if (!pay) return cb(id);\r\n    call('POST', '/payments', { orderId: id, cardNumber: '4242424242424242', expiry: '12/30', cvv: '123' },\r\n      (e2, c2) => (e2 || c2 >= 300) ? console.error('Payment failed', c2) : cb(id));\r\n  });\r\nconst shipmentOf = (orderId, cb) => call('GET', '/shipments/order/' + orderId, null, (e, c, d) => cb(asShip(d)));\r\nconst makeShipment = cb => newOrder(true, oid => shipmentOf(oid, s => cb(pick(s, /^shipmentid$/i), oid)));\r\nconst setStatus = (id, status, cb, token) => pm.sendRequest({\r\n  url: base + '/shipments/' + id + '/status', method: 'PUT',\r\n  header: Object.assign({ 'Content-Type': 'application/json' }, token ? { Authorization: 'Bearer ' + token } : {}),\r\n  body: { mode: 'raw', raw: JSON.stringify({ status }) }\r\n}, (e, r) => cb(r ? r.code : null));\r\n\r\nmakeShipment((sid, oid) => {\r\n  pm.variables.set('shipment_id', sid);\r\n  pm.variables.set('order_id', oid);\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst s = pm.response.json(), sid = pm.variables.get('shipment_id'), oid = pm.variables.get('order_id');\r\npm.test('200 OK and status is Shipped', () => {\r\n  pm.response.to.have.status(200);\r\n  pm.expect(pick(s, /^status$/i)).to.eql('Shipped');\r\n});\r\nconst ep = pm.variables.get('notification_endpoint') || pm.environment.get('notification_endpoint');\r\nif (!ep) {\r\n  pm.test.skip('SHP-006: no notification API/mailbox, verify via SQL for shipment ' + sid);\r\n  console.log('SQL check: shipment_id =', sid, '| order_id =', oid, '| tracking =', pick(s, /^trackingnumber$/i));\r\n} else {\r\n  pm.sendRequest(ep.replace('{orderId}', oid), (e, r) => {\r\n    const txt = JSON.stringify(r.json());\r\n    pm.test('One notification, with order reference and tracking number', () => {\r\n      pm.expect(txt.split('Shipped').length - 1).to.be.at.least(1);\r\n      pm.expect(txt).to.include(String(oid));\r\n      pm.expect(txt).to.include(pick(s, /^trackingnumber$/i));\r\n    });\r\n  });\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"status\": \"Shipped\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}api/shipments/{{shipment_id}}/status",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "shipments",
+                "{{shipment_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-SHP-004C",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"orderId\": 7,\r\n  \"cardNumber\": \"4242424242424242\",\r\n  \"expiry\": \"12/30\",\r\n  \"cvv\": \"123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}api/payments",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "payments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-SHP-004B",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst asShip = d => Array.isArray(d) ? d[0] : d;\r\nconst parse = r => { try { return r.json(); } catch (e) { return null; } };\r\nconst call = (method, path, body, cb) => pm.sendRequest({\r\n  url: base + path, method,\r\n  header: { 'Content-Type': 'application/json' },\r\n  body: body ? { mode: 'raw', raw: JSON.stringify(body) } : undefined\r\n}, (e, r) => cb(e, r ? r.code : null, r ? parse(r) : null));\r\nconst newOrder = (pay, cb) => call('POST', '/orders',\r\n  { customerId: 1, address: '12 Test Street, Johannesburg', couponCode: '', items: [{ productId: 1, quantity: 1 }] },\r\n  (e, c, o) => {\r\n    const b = (o && o.order) || o;\r\n    const id = pick(b, /^orderid$/i) ?? pick(b, /^id$/i);\r\n    if (e || !id) return console.error('Order create failed', c, o);\r\n    if (!pay) return cb(id);\r\n    call('POST', '/payments', { orderId: id, cardNumber: '4242424242424242', expiry: '12/30', cvv: '123' },\r\n      (e2, c2) => (e2 || c2 >= 300) ? console.error('Payment failed', c2) : cb(id));\r\n  });\r\nconst shipmentOf = (orderId, cb) => call('GET', '/shipments/order/' + orderId, null, (e, c, d) => cb(asShip(d)));\r\nconst makeShipment = cb => newOrder(true, oid => shipmentOf(oid, s => cb(pick(s, /^shipmentid$/i), oid)));\r\nconst setStatus = (id, status, cb, token) => pm.sendRequest({\r\n  url: base + '/shipments/' + id + '/status', method: 'PUT',\r\n  header: Object.assign({ 'Content-Type': 'application/json' }, token ? { Authorization: 'Bearer ' + token } : {}),\r\n  body: { mode: 'raw', raw: JSON.stringify({ status }) }\r\n}, (e, r) => cb(r ? r.code : null));\r\n\r\nmakeShipment((sid, oid) => {\r\n  pm.variables.set('shipment_id', sid);\r\n  pm.variables.set('order_id', oid);\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst s = pm.response.json();\r\npm.test('200 OK', () => pm.response.to.have.status(200));\r\npm.test('Status is Preparing', () => pm.expect(pick(s, /^status$/i)).to.eql('Shipped'));\r\npm.sendRequest(base + '/tracking/' + pick(s, /^trackingnumber$/i), (e, r) => {\r\n  const h = r.json().history || [];\r\n  const st = h.map(x => pick(x, /^status$/i));\r\n\r\n  pm.test('Shipped entry has a timestamp', () => {\r\n    const x = h.find(y => pick(y, /^status$/i) === 'Shipped');\r\n    pm.expect(Object.values(x || {}).some(v => /^\\d{4}-\\d{2}-\\d{2}T/.test(v))).to.be.true;\r\n  });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}api/orders",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-SHP-004D",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}api/orders/7",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "orders",
+                "7"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Delivery API",
+      "item": [
+        {
+          "name": "T-API-DEL-001",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// FR-004-AC2, FR-004-AC3 | Positive\r\nconst body = (() => {\r\n  try {\r\n    return pm.response.json();\r\n  } catch (e) {\r\n    return {};\r\n  }\r\n})();\r\nconst requested = pm.environment.get('tracking_number') || 'TRK-000001';\r\n\r\npm.test('T-API-DEL-001: valid tracking lookup returns 200', function () {\r\n  pm.expect(pm.response.code).to.equal(200);\r\n});\r\n\r\npm.test('T-API-DEL-001: response contains tracking status and history', function () {\r\n  pm.expect(body).to.have.property('trackingNumber');\r\n  pm.expect(body).to.have.property('shipment');\r\n  pm.expect(body).to.have.property('history');\r\n  pm.expect(body.shipment).to.have.property('Status');\r\n  pm.expect(body.history).to.be.an('array');\r\n  pm.expect(body.history.length, 'history entries').to.be.above(0);\r\n  pm.expect(body.history[0]).to.have.property('status');\r\n  pm.expect(body.history[0]).to.have.property('timestamp');\r\n  pm.expect(body.history[0]).to.have.property('detail');\r\n});\r\n\r\npm.test('T-API-DEL-001: the tracking number matches the one requested', function () {\r\n  pm.expect(body.trackingNumber).to.equal(requested);\r\n  pm.expect(body.shipment.TrackingNumber).to.equal(requested);\r\n});\r\n\r\npm.test('T-API-DEL-001: history is ordered by time', function () {\r\n  pm.expect(body.history, 'history').to.be.an('array');\r\n  const times = body.history.map((item) => new Date(item.timestamp).getTime());\r\n  const asc = [...times].sort((a, b) => a - b);\r\n  pm.expect(times).to.deep.equal(asc);\r\n});\r\n\r\npm.test('T-API-DEL-001: latest history entry matches the shipment status', function () {\r\n  const last = body.history[body.history.length - 1];\r\n  pm.expect(last.status).to.equal(body.shipment.Status);\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Create, pay and ship an order so the shipment has more than one history entry\r\nconst api = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst send = (method, path, body, cb) =>\r\n  pm.sendRequest(\r\n    {\r\n      url: api + path,\r\n      method,\r\n      header: { 'Content-Type': 'application/json' },\r\n      body: body ? { mode: 'raw', raw: JSON.stringify(body) } : undefined,\r\n    },\r\n    cb\r\n  );\r\n\r\nsend(\r\n  'POST',\r\n  '/orders',\r\n  { customerId: 1, address: '14 Main Road, Cape Town', couponCode: null, items: [{ productId: 1, quantity: 1 }] },\r\n  (e1, order) => {\r\n    const orderId = order.json().OrderId;\r\n    send('POST', '/payments', { orderId, cardNumber: '4242424242424242', expiry: '12/30', cvv: '123' }, () => {\r\n      send('GET', '/orders/' + orderId, null, (e3, full) => {\r\n        const shipment = full.json().shipment;\r\n        send('PUT', '/shipments/' + shipment.ShipmentId + '/status', { status: 'Shipped' }, () => {\r\n          pm.environment.set('order_id', orderId);\r\n          pm.environment.set('tracking_number', shipment.TrackingNumber);\r\n        });\r\n      });\r\n    });\r\n  }\r\n);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MTpjdXN0b21lcjFAcmV0YWlscWUudGVzdDoxNzkzMDg0NTM1NTgw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}api/tracking/{{tracking_number}}",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "tracking",
+                "{{tracking_number}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-DEL-001-Negative",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-DEL-002",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-DEL-003",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Test data for T-API-DEL-003: two shipped orders (one for the positive case, one for the negative case)\r\nconst api = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst send = (method, path, body, cb) =>\r\n  pm.sendRequest(\r\n    {\r\n      url: api + path,\r\n      method,\r\n      header: { 'Content-Type': 'application/json' },\r\n      body: body ? { mode: 'raw', raw: JSON.stringify(body) } : undefined,\r\n    },\r\n    cb\r\n  );\r\n\r\n// Create, pay and ship one order; calls done({ orderId, shipmentId })\r\nfunction makeShippedOrder(done) {\r\n  send(\r\n    'POST',\r\n    '/orders',\r\n    { customerId: 1, address: '14 Main Road, Cape Town', couponCode: null, items: [{ productId: 1, quantity: 1 }] },\r\n    (e1, order) => {\r\n      if (e1 || !order) return console.error('Setup failed: POST /orders did not respond', e1);\r\n      const orderId = order.json().OrderId;\r\n      send('POST', '/payments', { orderId, cardNumber: '4242424242424242', expiry: '12/30', cvv: '123' }, () => {\r\n        send('GET', '/orders/' + orderId, null, (e3, full) => {\r\n          const shipmentId = full.json().shipment.ShipmentId;\r\n          send('PUT', '/shipments/' + shipmentId + '/status', { status: 'Shipped' }, () =>\r\n            done({ orderId, shipmentId })\r\n          );\r\n        });\r\n      });\r\n    }\r\n  );\r\n}\r\n\r\n// Proof-of-delivery data sent by the request\r\npm.variables.set('pod_recipient', 'Thandi Test');\r\npm.variables.set('pod_reference', 'SIG-' + Date.now());\r\npm.variables.set('pod_timestamp', new Date().toISOString());\r\n\r\nmakeShippedOrder((positive) => {\r\n  pm.variables.set('order_id', positive.orderId);\r\n  pm.variables.set('shipment_id', positive.shipmentId);\r\n  makeShippedOrder((negative) => {\r\n    pm.variables.set('neg_order_id', negative.orderId);\r\n    pm.variables.set('neg_shipment_id', negative.shipmentId);\r\n  });\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// FR-004-AC5 | Positive / Negative\r\nconst api = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst orderId = pm.variables.get('order_id');\r\nconst negShipmentId = pm.variables.get('neg_shipment_id');\r\nconst negOrderId = pm.variables.get('neg_order_id');\r\nconst recipient = pm.variables.get('pod_recipient');\r\nconst reference = pm.variables.get('pod_reference');\r\n\r\nconst call = (method, path, body, cb) =>\r\n  pm.sendRequest(\r\n    {\r\n      url: api + path,\r\n      method,\r\n      header: { 'Content-Type': 'application/json' },\r\n      body: body ? { mode: 'raw', raw: JSON.stringify(body) } : undefined,\r\n    },\r\n    cb\r\n  );\r\nconst json = (res) => {\r\n  try {\r\n    return res.json();\r\n  } catch (e) {\r\n    return {};\r\n  }\r\n};\r\n// POD field names are not in the contract, so find them by name pattern (e.g. RecipientName, PodReference)\r\nconst find = (obj, pattern) => Object.keys(obj || {}).find((k) => pattern.test(k));\r\n\r\npm.test('T-API-DEL-003: delivery with proof of delivery returns 200', function () {\r\n  pm.expect(pm.response.code).to.equal(200);\r\n});\r\n\r\ncall('GET', '/shipments/order/' + orderId, null, (e1, shipRes) => {\r\n  // negative case: Delivered with NO proof of delivery\r\n  call('PUT', '/shipments/' + negShipmentId + '/status', { status: 'Delivered' }, (e2, noPod) => {\r\n    call('GET', '/shipments/order/' + negOrderId, null, (e3, negShip) => {\r\n      const body = json(shipRes);\r\n      const shipment = body.shipment || body;\r\n      const recipientKey = find(shipment, /recipient/i);\r\n      const referenceKey = find(shipment, /pod|signature|photo/i);\r\n\r\n      pm.test('shipment is Delivered and has a delivery timestamp', function () {\r\n        pm.expect(e1, 'request error').to.be.null;\r\n        pm.expect(shipment.Status).to.equal('Delivered');\r\n        pm.expect(shipment.DeliveredAt, 'DeliveredAt').to.not.equal(null);\r\n      });\r\n\r\n      pm.test('proof of delivery is stored and returned: recipient name', function () {\r\n        pm.expect(recipientKey, 'a recipient field in the shipment (found: ' + Object.keys(shipment) + ')').to.be.a('string');\r\n        pm.expect(shipment[recipientKey]).to.equal(recipient);\r\n      });\r\n\r\n      pm.test('proof of delivery is stored and returned: signature / photo reference', function () {\r\n        pm.expect(referenceKey, 'a POD reference field in the shipment (found: ' + Object.keys(shipment) + ')').to.be.a('string');\r\n        pm.expect(shipment[referenceKey]).to.equal(reference);\r\n      });\r\n\r\n      pm.test('delivery without the mandatory POD fields is rejected (400 or 422)', function () {\r\n        pm.expect(e2, 'request error').to.be.null;\r\n        pm.expect(noPod.code, 'status').to.be.oneOf([400, 422]);\r\n      });\r\n\r\n      pm.test('the shipment without POD is not marked Delivered', function () {\r\n        const negBody = json(negShip);\r\n        const negShipment = negBody.shipment || negBody;\r\n        pm.expect(negShipment.Status).to.not.equal('Delivered');\r\n      });\r\n    });\r\n  });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"status\": \"Delivered\",\r\n  \"recipientName\": \"{{pod_recipient}}\",\r\n  \"podReference\": \"{{pod_reference}}\",\r\n  \"deliveredAt\": \"{{pod_timestamp}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}api/shipments/{{shipment_id}}/status",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "shipments",
+                "{{shipment_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-DEL-004",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Create, pay and ship an order, so the request can mark its shipment Delivered\r\nconst api = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst send = (method, path, body, cb) =>\r\n  pm.sendRequest(\r\n    {\r\n      url: api + path,\r\n      method,\r\n      header: { 'Content-Type': 'application/json' },\r\n      body: body ? { mode: 'raw', raw: JSON.stringify(body) } : undefined,\r\n    },\r\n    cb\r\n  );\r\n\r\nsend(\r\n  'POST',\r\n  '/orders',\r\n  { customerId: 1, address: '14 Main Road, Cape Town', couponCode: null, items: [{ productId: 1, quantity: 1 }] },\r\n  (e1, order) => {\r\n    if (e1 || !order) return console.error('Setup failed: POST /orders did not respond', e1);\r\n    const orderId = order.json().OrderId;\r\n    send('POST', '/payments', { orderId, cardNumber: '4242424242424242', expiry: '12/30', cvv: '123' }, () => {\r\n      send('GET', '/orders/' + orderId, null, (e3, full) => {\r\n        const shipmentId = full.json().shipment.ShipmentId;\r\n        send('PUT', '/shipments/' + shipmentId + '/status', { status: 'Shipped' }, () => {\r\n          pm.variables.set('order_id', orderId);\r\n          pm.variables.set('shipment_id', shipmentId);\r\n        });\r\n      });\r\n    });\r\n  }\r\n);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// FR-004-AC4 | Positive\r\n// The API contract has no notification endpoint. Set the environment variable `notification_endpoint`\r\n// to the path that lists notifications, using {orderId} as a placeholder, e.g. /notifications?orderId={orderId}\r\nconst api = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst orderId = pm.variables.get('order_id');\r\nconst shipmentId = pm.variables.get('shipment_id');\r\nconst endpoint = pm.environment.get('notification_endpoint');\r\n\r\npm.test('T-API-DEL-004: marking the shipment Delivered returns 200', function () {\r\n  pm.expect(pm.response.code).to.equal(200);\r\n});\r\n\r\nconst call = (method, path, body, cb) =>\r\n  pm.sendRequest(\r\n    {\r\n      url: api + path,\r\n      method,\r\n      header: { 'Content-Type': 'application/json' },\r\n      body: body ? { mode: 'raw', raw: JSON.stringify(body) } : undefined,\r\n    },\r\n    cb\r\n  );\r\n\r\n// the delivered notifications that belong to this order\r\nconst deliveredFor = (res) => {\r\n  let b = {};\r\n  try {\r\n    b = res.json();\r\n  } catch (e) {}\r\n  const list = Array.isArray(b) ? b : b.notifications || b.items || [];\r\n  return list.filter(\r\n    (n) =>\r\n      /deliver/i.test(JSON.stringify(n)) &&\r\n      Object.entries(n).some(([k, v]) => /order/i.test(k) && Number(v) === Number(orderId))\r\n  );\r\n};\r\n\r\nif (!endpoint) {\r\n  console.log('BLOCKED: no notification endpoint. Set the environment variable notification_endpoint.');\r\n  pm.test.skip('BLOCKED: a delivered notification is sent to the customer (no notification endpoint available)');\r\n  pm.test.skip('BLOCKED: the delivered notification is sent only once');\r\n} else {\r\n  const path = endpoint.replace('{orderId}', orderId);\r\n  call('GET', path, null, (e1, first) => {\r\n    // marking Delivered a second time must not send a second notification\r\n    call('PUT', '/shipments/' + shipmentId + '/status', { status: 'Delivered' }, () => {\r\n      call('GET', path, null, (e2, second) => {\r\n        const sent = deliveredFor(first);\r\n\r\n        pm.test('a delivered notification is sent to the customer', function () {\r\n          pm.expect(e1, 'request error').to.be.null;\r\n          pm.expect(sent.length, 'delivered notifications for the order').to.be.above(0);\r\n          const text = JSON.stringify(sent[0]).toLowerCase();\r\n          pm.expect(\r\n            text.includes('customer1@retailqe.test') || text.includes('0820001001') || /customer.?id\"?:\\s*1\\b/.test(text),\r\n            'sent to customer 1 (email, phone or id)'\r\n          ).to.equal(true);\r\n        });\r\n\r\n        pm.test('the delivered notification is sent only once', function () {\r\n          pm.expect(sent.length, 'after the first Delivered').to.equal(1);\r\n          pm.expect(deliveredFor(second).length, 'after Delivered again').to.equal(1);\r\n        });\r\n      });\r\n    });\r\n  });\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"status\": \"Delivered\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}api/shipments/{{shipment_id}}/status",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "shipments",
+                "{{shipment_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Global Error Handling",
+      "item": [
+        {
+          "name": "T-API-ERR-001",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\n\r\n// Step 1: send the main request with NO token\r\npm.request.headers.remove('Authorization');\r\n\r\n// Log in to get a real token, then build the tampered and expired versions\r\npm.sendRequest({\r\n  url: base + '/auth/login', method: 'POST',\r\n  header: { 'Content-Type': 'application/json' },\r\n  body: { mode: 'raw', raw: JSON.stringify({\r\n    email: pm.variables.get('customer_email') || 'customer1@retailqe.test',\r\n    password: pm.variables.get('customer_password') || 'Pass123!' }) }\r\n}, (e, r) => {\r\n  let token = null; try { token = r.json().token; } catch (x) {}\r\n  if (e || !token) return console.error('Login failed, cannot build tokens', e, r && r.code, r && r.text());\r\n\r\n  const parts = token.split('.');\r\n  const b64u = s => s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - s.length % 4) % 4);\r\n  const enc = o => btoa(JSON.stringify(o)).replace(/=/g, '').replace(/\\+/g, '-').replace(/\\//g, '_');\r\n\r\n  // Step 2: tampered token (alter the first character of the signature)\r\n  pm.variables.set('tampered_token', parts.length === 3\r\n    ? parts[0] + '.' + parts[1] + '.' + parts[2].replace(/^./, c => c === 'A' ? 'B' : 'A')\r\n    : token + 'x');\r\n\r\n  // Step 3: expired token (exp set one hour in the past)\r\n  if (parts.length === 3) {\r\n    try {\r\n      const payload = JSON.parse(atob(b64u(parts[1])));\r\n      payload.exp = Math.floor(Date.now() / 1000) - 3600;\r\n      pm.variables.set('expired_token', parts[0] + '.' + enc(payload) + '.' + parts[2]);\r\n    } catch (x) { console.error('Could not build expired token', x); }\r\n  }\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst LEAK = /stack|node_modules|\\.js:\\d+|\\bat\\s+\\S+\\s+\\(|SELECT\\s|mssql|SqlError|ECONN/i;\r\n\r\nconst check = (label, code, text) => {\r\n  let body = null; try { body = JSON.parse(text); } catch (x) {}\r\n  pm.test(label + ': returns 401', () => pm.expect(code).to.eql(401));\r\n  pm.test(label + ': error body has code and message', () => {\r\n    pm.expect(body, 'JSON error body').to.be.an('object');\r\n    pm.expect(body).to.have.property('code');\r\n    pm.expect(body).to.have.property('message');\r\n  });\r\n  pm.test(label + ': no internal details leaked', () => pm.expect(text).to.not.match(LEAK));\r\n};\r\n\r\n// Step 1: no token (the main request)\r\ncheck('No token', pm.response.code, pm.response.text());\r\n\r\n// Steps 2 and 3\r\nconst withToken = (label, token) => {\r\n  if (!token) return pm.test.skip(label + ': token could not be built');\r\n  pm.sendRequest({ url: base + '/customers/1', method: 'GET',\r\n    header: { Authorization: 'Bearer ' + token } },\r\n    (e, r) => check(label, r ? r.code : null, r ? r.text() : ''));\r\n};\r\nwithToken('Tampered token', pm.variables.get('tampered_token'));\r\nwithToken('Expired token', pm.variables.get('expired_token'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}api/customers/1",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "customers",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-ERR-002",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Step 1: malformed JSON body (missing closing brace and value)\r\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\r\npm.request.body.update({ mode: 'raw', raw: '{ \"customerId\": 1, \"address\": ' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst LEAK = /stack|node_modules|\\.js:\\d+|\\bat\\s+\\S+\\s+\\(|SELECT\\s|mssql|SqlError|ECONN|SyntaxError|Unexpected token/i;\r\n\r\nconst check = (label, code, text, fields) => {\r\n  let body = null; try { body = JSON.parse(text); } catch (x) {}\r\n  console.log(label + ' | ' + code + ' | ' + text.slice(0, 300));\r\n  pm.test(label + ': returns 400 (not a server error)', () => pm.expect(code).to.eql(400));\r\n  pm.test(label + ': error body is JSON with a clear message', () => {\r\n    pm.expect(body, 'JSON error body').to.be.an('object');\r\n    pm.expect(body.message || body.error || body.errors, 'message/error/errors').to.exist;\r\n  });\r\n  (fields || []).forEach(f =>\r\n    pm.test(label + ': error names field \"' + f + '\"', () => pm.expect(text).to.include(f)));\r\n  pm.test(label + ': no internal details leaked', () => pm.expect(text).to.not.match(LEAK));\r\n};\r\n\r\n// Step 1: invalid JSON (the main request)\r\ncheck('Invalid JSON', pm.response.code, pm.response.text());\r\n\r\nconst post = (label, body, fields) => pm.sendRequest({\r\n  url: base + '/orders', method: 'POST',\r\n  header: { 'Content-Type': 'application/json' },\r\n  body: { mode: 'raw', raw: JSON.stringify(body) }\r\n}, (e, r) => check(label, r ? r.code : null, r ? r.text() : '', fields));\r\n\r\n// Step 2: required fields missing (address and items)\r\npost('Missing fields', { customerId: 1 }, ['address', 'item']);\r\n\r\n// Step 3: wrong data types\r\npost('Wrong types', { customerId: 'abc', address: 12345, items: 'not-an-array' },\r\n  ['customerId', 'address', 'item']);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}api/orders",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-ERR-003",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst post = (path, body, cb) => pm.sendRequest({\r\n  url: base + path, method: 'POST',\r\n  header: { 'Content-Type': 'application/json' },\r\n  body: { mode: 'raw', raw: JSON.stringify(body) }\r\n}, (e, r) => { let d = null; try { d = r.json(); } catch (x) {} cb(e, r ? r.code : null, d); });\r\n\r\n// Log in as customer 1\r\npost('/auth/login', {\r\n  email: pm.variables.get('customer_email') || 'customer1@retailqe.test',\r\n  password: pm.variables.get('customer_password') || 'Pass123!' }, (e, c, d) => {\r\n  const token = d && d.token;\r\n  if (!token) return console.error('Login failed', c, d);\r\n  pm.variables.set('customer_token', token);\r\n  pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer ' + token });\r\n\r\n  // Create an order that belongs to customer 2 (product 2)\r\n  post('/orders', { customerId: 2, address: '5 Other Street, Cape Town', couponCode: '',\r\n    items: [{ productId: 2, quantity: 1 }] }, (e2, c2, o) => {\r\n    const b = (o && o.order) || o;\r\n    const id = b && (b.OrderId ?? b.orderId ?? b.id);\r\n    if (!id) return console.error('Could not create customer 2 order', c2, o);\r\n    pm.variables.set('other_order_id', id);\r\n  });\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst LEAK = /stack|node_modules|\\.js:\\d+|\\bat\\s+\\S+\\s+\\(|SELECT\\s|mssql|SqlError|ECONN|SyntaxError/i;\r\n\r\nconst check = (label, code, text, allowed) => {\r\n  let body = null; try { body = JSON.parse(text); } catch (x) {}\r\n  pm.test(label + ': returns ' + allowed.join(' or '), () => pm.expect(code).to.be.oneOf(allowed));\r\n  pm.test(label + ': standard JSON error body (code, message)', () => {\r\n    pm.expect(body, 'JSON error body').to.be.an('object');\r\n    pm.expect(body).to.have.property('code');\r\n    pm.expect(body).to.have.property('message');\r\n  });\r\n  pm.test(label + ': no stack trace or SQL leaked', () => pm.expect(text).to.not.match(LEAK));\r\n};\r\n\r\n// Step 1: unknown order id (the main request)\r\ncheck('Unknown order', pm.response.code, pm.response.text(), [404]);\r\n\r\nconst get = (label, path, allowed) => pm.sendRequest({\r\n  url: base + path, method: 'GET',\r\n  header: { Authorization: 'Bearer ' + pm.variables.get('customer_token') }\r\n}, (e, r) => check(label, r ? r.code : null, r ? r.text() : '', allowed));\r\n\r\n// Step 2: another customer's order\r\nconst other = pm.variables.get('other_order_id');\r\nif (other) get(\"Another customer's order\", '/orders/' + other, [403, 404]);\r\nelse pm.test.skip(\"Another customer's order: setup failed, check the console\");\r\n\r\n// Step 3: unknown route\r\nget('Unknown route', '/this-route-does-not-exist', [404]);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}api/orders/999999",
+              "host": [
+                "{{baseURL}}api"
+              ],
+              "path": [
+                "orders",
+                "999999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T-API-ERR-004",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

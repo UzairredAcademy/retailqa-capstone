@@ -1,0 +1,40 @@
+$kind: http-request
+name: "T-API-DEL-001: GET tracking by tracking number returns status and history"
+description: |-
+  Steps:
+  1. GET /api/tracking/{trackingNumber}
+  2. Assert fields
+  3. GET with an unknown number
+
+  Expected: Valid number returns 200 with the current status and ordered history; unknown number returns 404 with a clear message
+url: "{{base_url}}/api/tracking/{{tracking_number}}"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-004-AC2, FR-004-AC3 | Positive
+      pm.test("T-API-DEL-001: valid tracking lookup returns 200", function () {
+          pm.expect(pm.response.code).to.equal(200);
+      });
+
+      pm.test("T-API-DEL-001: response contains tracking status and history", function () {
+          const body = pm.response.json();
+          pm.expect(body).to.have.property('trackingNumber');
+          pm.expect(body).to.have.property('shipment');
+          pm.expect(body).to.have.property('history');
+          pm.expect(body.shipment).to.have.property('Status');
+          pm.expect(body.history).to.be.an('array');
+      });
+
+      pm.test("T-API-DEL-001: history is ordered by time", function () {
+          const body = pm.response.json();
+          if (body.history.length > 1) {
+              const times = body.history.map(item => new Date(item.timestamp).getTime());
+              const asc = [...times].sort((a, b) => a - b);
+              pm.expect(times).to.deep.equal(asc);
+          }
+      });
+    language: text/javascript
+order: 1000

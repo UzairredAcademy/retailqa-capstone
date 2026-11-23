@@ -1,0 +1,22 @@
+$kind: http-request
+name: "T-API-DEL-004: Delivered notification (SMS/Email) is triggered"
+description: |-
+  Steps:
+  1. Mark Delivered
+  2. Check the notification endpoint, test mailbox or SMS stub
+
+  Expected: A delivered notification is sent once to the customer
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-004-AC4 | Positive
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-DEL-004: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 4000

@@ -1,0 +1,2 @@
+$kind: collection
+description: "Delivery APIs (P0). Preconditions: Valid auth token; shipment with a tracking number exists"

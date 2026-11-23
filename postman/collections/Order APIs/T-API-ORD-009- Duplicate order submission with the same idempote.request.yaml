@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-ORD-009: Duplicate order submission with the same idempotency key creates one order"
+description: |-
+  Steps:
+  1. POST an order with an Idempotency-Key
+  2. POST the identical request again with the same key
+  3. GET the customer's orders
+
+  Expected: The second call returns the original order (or 409) and no second order exists
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-002-AC7 | Negative
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-ORD-009: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 9000

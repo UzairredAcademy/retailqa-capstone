@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-PAY-004: Invalid CVV is rejected"
+description: |-
+  Steps:
+  1. POST a 2-digit CVV
+  2. POST a non-numeric CVV
+  3. POST with CVV missing
+
+  Expected: 400/422 with a CVV validation error each time; no charge made
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-003-AC1 | Negative
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-PAY-004: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 4000

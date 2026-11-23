@@ -1,0 +1,23 @@
+$kind: http-request
+name: "T-API-ORD-005: Invalid, expired and reused coupons are rejected"
+description: |-
+  Steps:
+  1. Apply an invalid code
+  2. Apply an expired code
+  3. Apply an already-used single-use code
+
+  Expected: Each returns 400/422 (or 404) with a clear error code; order total is unchanged
+url: "{{base_url}}/TODO"
+method: GET
+headers:
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      // FR-002-AC3 | Negative
+      // TODO: replace with real assertions - status code, schema and data (brief section 8.2)
+      pm.test("T-API-ORD-005: status code is as expected", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 5000
