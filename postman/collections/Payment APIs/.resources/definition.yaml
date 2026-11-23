@@ -1,2 +1,0 @@
-$kind: collection
-description: "Payment APIs (P0). Preconditions: Valid auth token; unpaid order exists; sandbox test card numbers available"
