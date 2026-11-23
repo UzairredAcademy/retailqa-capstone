@@ -1,2 +1,0 @@
-$kind: collection
-description: "Authentication APIs (P0). Preconditions: Postman environment holds base_url; test users seeded (one active, one disposable for lockout)"
