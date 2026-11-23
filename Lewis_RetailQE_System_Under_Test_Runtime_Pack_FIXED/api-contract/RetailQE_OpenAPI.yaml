@@ -1,0 +1,211 @@
+openapi: 3.0.3
+info:
+  title: RetailQE Training API
+  version: 1.0.0
+  description: Synthetic retail API supplied for the Lewis RetailQE capstone.
+servers:
+  - url: http://localhost:4000/api
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate a test user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200': { description: Login successful }
+        '401': { description: Invalid credentials }
+  /products:
+    get:
+      summary: List active products and stock
+      responses:
+        '200': { description: Product list }
+  /customers/{customerId}:
+    get:
+      summary: Get customer profile
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Customer profile }
+    put:
+      summary: Update customer profile
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName: { type: string }
+                email: { type: string }
+                phone: { type: string }
+                address: { type: string }
+      responses:
+        '200': { description: Updated customer }
+  /orders:
+    get:
+      summary: List orders with optional filters
+      parameters:
+        - in: query
+          name: customerId
+          schema: { type: integer }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: from
+          schema: { type: string, format: date }
+        - in: query
+          name: to
+          schema: { type: string, format: date }
+        - in: query
+          name: minPrice
+          schema: { type: number }
+        - in: query
+          name: maxPrice
+          schema: { type: number }
+      responses:
+        '200': { description: Orders }
+    post:
+      summary: Create a retail order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customerId, address, items]
+              properties:
+                customerId: { type: integer }
+                address: { type: string }
+                couponCode: { type: string, nullable: true }
+                items:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [productId, quantity]
+                    properties:
+                      productId: { type: integer }
+                      quantity: { type: integer, minimum: 1 }
+      responses:
+        '201': { description: Order created }
+        '400': { description: Validation failure }
+  /orders/{orderId}:
+    get:
+      summary: Get order details
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Order details }
+    put:
+      summary: Modify an unpaid order
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Order updated }
+        '409': { description: Order cannot be modified }
+  /orders/{orderId}/cancel:
+    post:
+      summary: Cancel an order
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Order cancelled }
+  /payments:
+    post:
+      summary: Process synthetic payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderId, cardNumber, expiry, cvv]
+              properties:
+                orderId: { type: integer }
+                cardNumber: { type: string }
+                expiry: { type: string }
+                cvv: { type: string }
+      responses:
+        '201': { description: Payment processed }
+        '402': { description: Payment declined }
+  /shipments/order/{orderId}:
+    get:
+      summary: Get shipment for an order
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Shipment details }
+  /shipments/{shipmentId}/status:
+    put:
+      summary: Update synthetic shipment status
+      parameters:
+        - in: path
+          name: shipmentId
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [Preparing, Shipped, Delivered] }
+      responses:
+        '200': { description: Shipment updated }
+  /returns:
+    post:
+      summary: Request a return for a delivered order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderId, reason]
+              properties:
+                orderId: { type: integer }
+                reason: { type: string }
+      responses:
+        '201': { description: Return created }
+        '400': { description: Return not allowed }
+  /dashboard/{customerId}:
+    get:
+      summary: Customer dashboard summary
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Dashboard data }

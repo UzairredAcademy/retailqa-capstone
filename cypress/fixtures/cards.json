@@ -1,18 +1,7 @@
 {
-  "_note": "Use the payment sandbox's documented test cards only. Never commit real card data.",
-  "valid": {
-    "number": "REPLACE_ME",
-    "expiry": "MM/YY",
-    "cvv": "000"
-  },
-  "declined": {
-    "number": "REPLACE_ME",
-    "expiry": "MM/YY",
-    "cvv": "000"
-  },
-  "expired": {
-    "number": "REPLACE_ME",
-    "expiry": "01/20",
-    "cvv": "000"
-  }
+  "_note": "Synthetic cards from the resource pack (PAYMENT_TEST_DATA). No real payment gateway is used.",
+  "approved": { "number": "4242424242424242", "expiry": "12/30", "cvv": "123" },
+  "declined": { "number": "4000000000000002", "expiry": "12/30", "cvv": "123" },
+  "invalidFormat": { "number": "1234", "expiry": "12/30", "cvv": "123" },
+  "expired": { "number": "4242424242424242", "expiry": "01/20", "cvv": "123" }
 }

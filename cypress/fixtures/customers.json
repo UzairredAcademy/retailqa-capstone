@@ -1,0 +1,23 @@
+[
+  {
+    "CustomerId": 1,
+    "FullName": "Nomsa Daniels",
+    "Email": "customer1@retailqe.test",
+    "Phone": "0820001001",
+    "Address": "14 Main Road, Cape Town"
+  },
+  {
+    "CustomerId": 2,
+    "FullName": "Thabo Jacobs",
+    "Email": "customer2@retailqe.test",
+    "Phone": "0820001002",
+    "Address": "22 Long Street, Cape Town"
+  },
+  {
+    "CustomerId": 3,
+    "FullName": "Amina Khan",
+    "Email": "amina@retailqe.test",
+    "Phone": "0820001003",
+    "Address": "8 Oak Avenue, Cape Town"
+  }
+]

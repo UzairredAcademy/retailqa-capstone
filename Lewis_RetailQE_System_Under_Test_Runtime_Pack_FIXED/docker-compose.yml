@@ -1,0 +1,42 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "RetailQE_Str0ng!2026"
+    ports:
+      - "1433:1433"
+    volumes:
+      - retailqe_sql:/var/opt/mssql
+
+  api:
+    build: ./system/api
+    environment:
+      SQL_HOST: sqlserver
+      SQL_PORT: 1433
+      SQL_USER: sa
+      SQL_PASSWORD: RetailQE_Str0ng!2026
+      SQL_DATABASE: RetailQEDb
+      DB_AUTO_INIT: "true"
+      PORT: 4000
+      CORS_ORIGIN: http://localhost:5173
+      SWAGGER_FILE: /app/api-contract/RetailQE_OpenAPI.yaml
+    depends_on:
+      - sqlserver
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./database:/app/database:ro
+      - ./api-contract:/app/api-contract:ro
+
+  web:
+    build: ./system/web
+    environment:
+      VITE_API_URL: http://localhost:4000/api
+    depends_on:
+      - api
+    ports:
+      - "5173:80"
+
+volumes:
+  retailqe_sql:

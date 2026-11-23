@@ -1,16 +1,8 @@
 {
-  "validUser": {
-    "email": "REPLACE_ME@example.test",
-    "password": "SET_VIA_ENV_OR_LOCAL_FIXTURE"
-  },
-  "invalidUsers": [
-    {
-      "email": "REPLACE_ME@example.test",
-      "password": "wrong-password"
-    },
-    {
-      "email": "unknown@example.test",
-      "password": "wrong-password"
-    }
-  ]
+  "_note": "Emails only. Passwords come from cypress.env.json (customer1Password, customer2Password, adminPassword).",
+  "customer1": { "email": "customer1@retailqe.test", "role": "Customer", "customerId": 1 },
+  "customer2": { "email": "customer2@retailqe.test", "role": "Customer", "customerId": 2 },
+  "admin": { "email": "admin@retailqe.test", "role": "Admin" },
+  "unknown": { "email": "unknown@retailqe.test", "role": "None" }
 }
+
