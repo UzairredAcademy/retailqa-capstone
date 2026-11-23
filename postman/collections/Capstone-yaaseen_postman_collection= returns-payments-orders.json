@@ -1,0 +1,2455 @@
+{
+  "info": {
+    "_postman_id": "b72d6d54-a672-474c-bed1-9c7c0d746212",
+    "name": "Capstone",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56952622",
+    "_collection_link": "https://go.postman.co/collection/56952622-b72d6d54-a672-474c-bed1-9c7c0d746212?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "auth tokens",
+      "item": [
+        {
+          "name": "customer 1",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"customer1@retailqe.test\",\r\n  \"password\": \"Pass123!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/login",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "customer 2",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"customer2@retailqe.test\",\r\n  \"password\": \"Pass123!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/login",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "admin",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/login",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "item": [
+        {
+          "name": "ORD-002",
+          "item": [
+            {
+              "name": "0",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      " // FR-002-AC1 | Negative / Boundary\",\r\n        pm.test(\"error message check\", function() {\r\n    var jsonData = pm.response.json();\r\n    pm.expect(jsonData.message).to.eq( \"Invalid product or quantity.\");\r\n});\r\n\r\npm.test(\"status code 400 is as expected\", function () {\r\n    pm.expect(pm.response.code).to.be.eq(400);\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 0\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "-1",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\r\n        pm.test(\"error message check\", function() {\r\n    var jsonData = pm.response.json();\r\n    pm.expect(jsonData.message).to.eq( \"Invalid product or quantity.\");\r\n});\r\n\r\npm.test(\"status code 400 is as expected\", function () {\r\n    pm.expect(pm.response.code).to.be.eq(400);\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": -1\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "string",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      " // FR-002-AC1 | Negative / Boundary\",\r\n                    pm.test(\"error message check\", function() {\r\n    var jsonData = pm.response.json();\r\n    pm.expect(jsonData.message).to.eq( \"Cannot insert the value NULL into column 'Subtotal', table 'RetailQEDb.dbo.Orders'; column does not allow nulls. INSERT fails.\");\r\n});\r\n\r\npm.test(\"status code 400 is as expected\", function () {\r\n    pm.expect(pm.response.code).to.be.eq(400);\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": \"abc\"\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "stock +1",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "// FR-002-AC1 | Negative / Boundary\npm.test(\"error message check\", function() {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData.message).to.eq(\"Insufficient stock for USB-C Dock.\");\n});\n\npm.test(\"status code 400 is as expected\", function () {\n    pm.expect(pm.response.code).to.be.eq(400);\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 4,\r\n      \"quantity\": \"6\"\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "=stock",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      " // FR-002-AC1 | Negative / Boundary\",\r\npm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.above(0);\r\n});\r\npm.test(\"Checks unit price\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.above(0);\r\n\r\n});\r\n              pm.test(\"status code is as expected\", function () {\r\n                 pm.expect(pm.response.code).to.be.oneOf([201])\r\n              });\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 4,\r\n      \"quantity\": \"5\"\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "ORD-005",
+          "item": [
+            {
+              "name": "invalid",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.above(0);\r\n});\r\n\r\npm.test(\"Checks subtotal\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.eq(450);\r\n\r\n});\r\npm.test(\"Checks TaxAmount\", function () {\r\n    const TaxAmount = pm.response.json().TaxAmount;\r\n\r\n    pm.expect(TaxAmount).to.exist;\r\n    pm.expect(TaxAmount).to.be.a(\"number\");\r\n    pm.expect(TaxAmount).to.be.eq(67.5);\r\n\r\n});\r\npm.test(\"Checks Discount is taking place\", function () {\r\n    const DiscountAmount = pm.response.json().DiscountAmount;\r\n\r\n    pm.expect(DiscountAmount).to.exist;\r\n    pm.expect(DiscountAmount).to.be.a(\"number\");\r\n    pm.expect(DiscountAmount).to.be.eq(0);\r\n\r\n});\r\npm.test(\"status code is as expected\", function () {\r\npm.expect(pm.response.code).to.be.eq(201)\r\n\r\n});\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"couponCode\": \"{{invalid-coupon}}\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "expired",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.above(0);\r\n});\r\n\r\npm.test(\"Checks subtotal\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.eq(450);\r\n\r\n});\r\npm.test(\"Checks TaxAmount\", function () {\r\n    const TaxAmount = pm.response.json().TaxAmount;\r\n\r\n    pm.expect(TaxAmount).to.exist;\r\n    pm.expect(TaxAmount).to.be.a(\"number\");\r\n    pm.expect(TaxAmount).to.be.eq(67.5);\r\n\r\n});\r\npm.test(\"Checks Discount is taking place\", function () {\r\n    const DiscountAmount = pm.response.json().DiscountAmount;\r\n\r\n    pm.expect(DiscountAmount).to.exist;\r\n    pm.expect(DiscountAmount).to.be.a(\"number\");\r\n    pm.expect(DiscountAmount).to.be.eq(0);\r\n\r\n});\r\npm.test(\"status code is as expected\", function () {\r\npm.expect(pm.response.code).to.be.eq(201)\r\n\r\n});\r\n"
+                    ]
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "connection": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{coupon}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"CreatedAt\": \"2028-11-03T08:21:48.437Z\",\r\n  \"couponCode\": \"{{coupon}}\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "re-used",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.above(0);\r\n});\r\n\r\npm.test(\"Checks subtotal\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.eq(450);\r\n\r\n});\r\npm.test(\"Checks TaxAmount\", function () {\r\n    const TaxAmount = pm.response.json().TaxAmount;\r\n\r\n    pm.expect(TaxAmount).to.exist;\r\n    pm.expect(TaxAmount).to.be.a(\"number\");\r\n    pm.expect(TaxAmount).to.be.eq(67.5);\r\n\r\n});\r\npm.test(\"Checks Discount is taking place\", function () {\r\n    const DiscountAmount = pm.response.json().DiscountAmount;\r\n\r\n    pm.expect(DiscountAmount).to.exist;\r\n    pm.expect(DiscountAmount).to.be.a(\"number\");\r\n    pm.expect(DiscountAmount).to.be.eq(0);\r\n\r\n});\r\npm.test(\"status code is as expected\", function () {\r\npm.expect(pm.response.code).to.be.eq(201)\r\n\r\n});\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"CreatedAt\": \"2028-11-03T08:21:48.437Z\",\r\n  \"couponCode\": \"{{coupon}}\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "ORD-006",
+          "item": [
+            {
+              "name": "create order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst key = pm.variables.get('idem_key');\r\nconst maxBefore = Number(pm.variables.get('max_order_before') || 0);\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst parse = r => { try { return r.json(); } catch (e) { return null; } };\r\nconst idOf = o => { const b = (o && o.order) || o; return pick(b, /^orderid$/i) ?? pick(b, /^id$/i); };\r\nconst body = { customerId: 1, address: '12 Idempotency Street, Johannesburg', couponCode: '',\r\n               items: [{ productId: 2, quantity: 1 }] };\r\n \r\npm.test('Request 1 creates the order (200/201)', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));\r\nconst firstId = idOf(parse(pm.response));\r\nconsole.log('Original order id:', firstId, '| key:', key);\r\npm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.above(0);\r\n});\r\npm.test(\"Checks unit price\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.above(0);\r\n\r\n});\r\n              pm.test(\"status code is as expected\", function () {\r\n                 pm.expect(pm.response.code).to.be.oneOf([201])\r\n              });\r\n"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\n \r\n// One unique idempotency key for this run, sent with the main request\r\nconst key = 'idem-' + Date.now();\r\npm.variables.set('idem_key', key);\r\npm.request.headers.upsert({ key: 'Idempotency-Key', value: key });\r\n \r\n// Remember the highest existing order id, so new orders can be counted later\r\npm.sendRequest(base + '/orders?customerId=1', (e, r) => {\r\n  let d = null; try { d = r.json(); } catch (x) {}\r\n  const list = Array.isArray(d) ? d : (d && (d.orders || d.data)) || [];\r\n  const max = Math.max(0, ...list.map(o => Number(pick(o, /^orderid$/i)) || 0));\r\n  pm.variables.set('max_order_before', max);\r\n  console.log('Highest order id before the test:', max);\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    }\r\n  ]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "quantity change",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID is correct\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.eq(1);\r\n});\r\npm.test(\"Checks unit price\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.eq(900);\r\n});\r\npm.test(\"qauntity changes correctly\", function(){\r\n    const quantity = pm.response.json().Quantity;\r\n    pm.expect(qauntity).to.exist;\r\n    pm.expect(qauntity).to.be.a(\"number\");\r\n    pm.expect(qauntity).to.be.eq(2);\r\n})\r\npm.test(\"status code is as expected\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([201,200])\r\n});\r\n\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 2\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders/1",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "address change",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID is correct\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.eq(1);\r\n});\r\npm.test(\"Checks unit price\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.eq(900);\r\n});\r\npm.test(\"adress change check\", function(){\r\n    const Address = pm.response.json().Address;\r\n    pm.expect(Address).to.exist;\r\n    pm.expect(Address).to.be.eq(\"22 test ave\");\r\n})\r\npm.test(\"status code is as expected\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([201,200])\r\n});\r\n\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"22 test ave\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 2\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders/1",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "persistence check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID is correct\", function () {\n    const orderId = pm.response.json().OrderId;\n    pm.expect(orderId).to.exist;\n    pm.expect(orderId).to.be.a(\"number\");\n    pm.expect(orderId).to.be.eq(1);\n});\npm.test(\"Checks unit price\", function () {\n    const subtotal = pm.response.json().Subtotal;\n    pm.expect(subtotal).to.exist;\n    pm.expect(subtotal).to.be.a(\"number\");\n    pm.expect(subtotal).to.be.eq(900);\n});\npm.test(\"adress change check\", function(){\n    const Address = pm.response.json().Address;\n    pm.expect(Address).to.exist;\n    pm.expect(Address).to.be.eq(\"22 test ave\");\n})\npm.test(\"qauntity change check\", function(){\n    const items = pm.response.json().items;\n    pm.expect(items).to.be.an('array');\n    pm.expect(items[0].Quantity).to.exist;\n    pm.expect(items[0].Quantity).to.be.eq(2);\n})\npm.test(\"status code is as expected\", function () {\n    pm.expect(pm.response.code).to.be.eq(200)\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders/1",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "ORD-007",
+          "item": [
+            {
+              "name": "create order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.above(0);\r\n});\r\npm.test(\"Checks unit price\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.above(0);\r\n});\r\n pm.test(\"status code is as expected\", function () {\r\n     pm.expect(pm.response.code).to.be.oneOf([201])\r\n});\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "pay for order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.above(0);\r\n});\r\npm.test(\"Checks payment id\", function () {\r\n    const PaymentId = pm.response.json().PaymentId;\r\n    pm.expect(PaymentId).to.exist;\r\n    pm.expect(PaymentId).to.be.a(\"number\");\r\n    pm.expect(PaymentId).to.be.eq(1);\r\n});\r\npm.test(\"Checks payment is approved\", function () {\r\n    const Status = pm.response.json().Status;\r\n    pm.expect(Status).to.exist;\r\n    pm.expect(Status).to.be.a(\"string\");\r\n    pm.expect(Status).to.be.eq(\"Approved\");\r\n});\r\n pm.test(\"status code is as expected\", function () {\r\n     pm.expect(pm.response.code).to.be.eq(201)\r\n});\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 1,\r\n  \"cardNumber\": \"4242424242424242\",\r\n  \"expiry\": \"12/30\",\r\n  \"cvv\": \"123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/payments",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "quantity change",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"error message check\", function () {\r\n    pm.expect(pm.response.text()).to.include(\"Paid orders cannot be modified.\")\r\n});\r\n\r\npm.test(\"status code is as expected\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([403,409,422])\r\n});\r\n\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 2\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders/1",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "address change",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"error message check\", function () {\r\n    pm.expect(pm.response.text()).to.include(\"Paid orders cannot be modified.\")\r\n});\r\n\r\npm.test(\"status code is as expected\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([403,409,422])\r\n});\r\n\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"22 test ave\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders/1",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "persistence check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID is correct\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.eq(1);\r\n});\r\npm.test(\"Checks unit price\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.eq(450);\r\n});\r\npm.test(\"adress change check\", function(){\r\n    const Address = pm.response.json().Address;\r\n    pm.expect(Address).to.exist;\r\n    pm.expect(Address).to.be.eq(\"14 Main Road, Cape Town\");\r\n})\r\npm.test(\"qauntity change check\", function(){\r\n    const items = pm.response.json().items;\r\n    pm.expect(items).to.be.an('array');\r\n    pm.expect(items[0].Quantity).to.exist;\r\n    pm.expect(items[0].Quantity).to.be.eq(1);\r\n})\r\npm.test(\"status code is as expected\", function () {\r\n    pm.expect(pm.response.code).to.be.eq(200)\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders/1",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "ORD-008",
+          "item": [
+            {
+              "name": "stock check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Checks for ProductId 1\", function () {\n    const jsonData = pm.response.json();\n    const product = jsonData[0];\n    pm.expect(product.ProductId).to.exist;\n    pm.expect(product.ProductId).to.be.a(\"number\");\n    pm.expect(product.ProductId).to.be.eq(1);\n});\n\npm.test(\"Checks Stock Quantity of ProductId 1\", function () {\n    const jsonData = pm.response.json();\n    const product = jsonData.find(p => p.ProductId === 1);\n\n    pm.expect(product).to.exist;\n    pm.expect(product.StockQuantity).to.exist;\n    pm.expect(product.StockQuantity).to.be.a(\"number\");\n    pm.expect(product.StockQuantity).to.be.eq(20);\n});\n\npm.test(\"status code is as expected\", function () {\n    pm.expect(pm.response.code).to.be.eq(200)\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/products",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "products"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "create order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.above(0);\r\n});\r\npm.test(\"Checks unit price\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.above(0);\r\n});\r\n pm.test(\"status code is as expected\", function () {\r\n     pm.expect(pm.response.code).to.be.oneOf([201])\r\n});\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "stock check 2",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Checks for ProductId 1\", function () {\r\n    const jsonData = pm.response.json();\r\n    const product = jsonData[0];\r\n    pm.expect(product.ProductId).to.exist;\r\n    pm.expect(product.ProductId).to.be.a(\"number\");\r\n    pm.expect(product.ProductId).to.be.eq(1);\r\n});\r\n\r\npm.test(\"Checks Stock Quantity of ProductId 1\", function () {\r\n    const jsonData = pm.response.json();\r\n    const product = jsonData.find(p => p.ProductId === 1);\r\n\r\n    pm.expect(product).to.exist;\r\n    pm.expect(product.StockQuantity).to.exist;\r\n    pm.expect(product.StockQuantity).to.be.a(\"number\");\r\n    pm.expect(product.StockQuantity).to.be.eq(19);\r\n});\r\n\r\npm.test(\"status code is as expected\", function () {\r\n    pm.expect(pm.response.code).to.be.eq(200)\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/products",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "products"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "order cancelation",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\n    const orderId = pm.response.json().orderId;\n\n    pm.expect(orderId).to.exist;\n    pm.expect(orderId).to.be.a(\"number\");\n    pm.expect(orderId).to.be.eq(1);\n});\n\npm.test(\"confirmation message check\", function () {\n    pm.expect(pm.response.text()).to.include(\"Order cancelled.\")\n});\n\npm.test(\"status code is as expected\", function () {\n    pm.expect(pm.response.code).to.be.eq(200);\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders/1/cancel",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "1",
+                    "cancel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "stock check 3",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Checks for ProductId 1\", function () {\r\n    const jsonData = pm.response.json();\r\n    const product = jsonData[0];\r\n    pm.expect(product.ProductId).to.exist;\r\n    pm.expect(product.ProductId).to.be.a(\"number\");\r\n    pm.expect(product.ProductId).to.be.eq(1);\r\n});\r\n\r\npm.test(\"Checks Stock Quantity\", function () {\r\n    const jsonData = pm.response.json();\r\n    const product = jsonData[0];\r\n    pm.expect(product.StockQuantity).to.exist;\r\n    pm.expect(product.StockQuantity).to.be.a(\"number\");\r\n    pm.expect(product.StockQuantity).to.be.eq(20);\r\n});\r\n\r\npm.test(\"status code is as expected\", function () {\r\n    pm.expect(pm.response.code).to.be.eq(200)\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/products",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "products"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "ORD-010",
+          "item": [
+            {
+              "name": "cust 1",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\r\npm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.eq(1);\r\n});\r\npm.test(\"Checks unit price\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.above(0);\r\n\r\n});\r\n              pm.test(\"status code is as expected\", function () {\r\n                 pm.expect(pm.response.code).to.be.oneOf([200])\r\n              });\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders/1",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "cust 2",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\r\npm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.eq(2);\r\n});\r\npm.test(\"Checks unit price\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.above(0);\r\n\r\n});\r\n              pm.test(\"status code is as expected\", function () {\r\n                 pm.expect(pm.response.code).to.be.oneOf([200])\r\n              });\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/orders/2",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "ORD-001",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  " // FR-002-AC1 | Positive,\r\npm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.above(0);\r\n});\r\npm.test(\"Checks unit price\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.above(0);\r\n\r\n});\r\n              pm.test(\"status code is as expected\", function () {\r\n                 pm.expect(pm.response.code).to.be.oneOf([201])\r\n              });\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer1 token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ORD-003",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.above(0);\r\n});\r\n\r\npm.test(\"Checks subtotal\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.eq(2170);\r\n\r\n});\r\npm.test(\"Checks TaxAmount\", function () {\r\n    const TaxAmount = pm.response.json().TaxAmount;\r\n\r\n    pm.expect(TaxAmount).to.exist;\r\n    pm.expect(TaxAmount).to.be.a(\"number\");\r\n    pm.expect(TaxAmount).to.be.eq(325.5);\r\n\r\n});\r\n\r\npm.test(\"status code is as expected\", function () {\r\npm.expect(pm.response.code).to.be.eq(201)\r\n\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer1 token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    },\r\n    {\r\n       \"productId\": 2,\r\n       \"quantity\": 1\r\n    },\r\n    {\r\n       \"productId\": 3,\r\n       \"quantity\": 1\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ORD-004",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check order ID\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.above(0);\r\n});\r\n\r\npm.test(\"Checks subtotal\", function () {\r\n    const subtotal = pm.response.json().Subtotal;\r\n\r\n    pm.expect(subtotal).to.exist;\r\n    pm.expect(subtotal).to.be.a(\"number\");\r\n    pm.expect(subtotal).to.be.eq(450);\r\n\r\n});\r\npm.test(\"Checks TaxAmount\", function () {\r\n    const TaxAmount = pm.response.json().TaxAmount;\r\n\r\n    pm.expect(TaxAmount).to.exist;\r\n    pm.expect(TaxAmount).to.be.a(\"number\");\r\n    pm.expect(TaxAmount).to.be.eq(67.5);\r\n\r\n});\r\npm.test(\"Checks Discount is taking place\", function () {\r\n    const DiscountAmount = pm.response.json().DiscountAmount;\r\n\r\n    pm.expect(DiscountAmount).to.exist;\r\n    pm.expect(DiscountAmount).to.be.a(\"number\");\r\n    pm.expect(DiscountAmount).to.be.above(0);\r\n\r\n});\r\npm.test(\"status code is as expected\", function () {\r\npm.expect(pm.response.code).to.be.eq(201)\r\n\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer1 token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"couponCode\": \"{{coupon}}\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ORD-009",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const base = pm.variables.get('baseURL').replace(/\\/$/, '') + '/api';\r\nconst key = pm.variables.get('idem_key');\r\nconst maxBefore = Number(pm.variables.get('max_order_before') || 0);\r\nconst pick = (o, re) => { for (const k in (o || {})) if (re.test(k)) return o[k]; };\r\nconst parse = r => { try { return r.json(); } catch (e) { return null; } };\r\nconst idOf = o => { const b = (o && o.order) || o; return pick(b, /^orderid$/i) ?? pick(b, /^id$/i); };\r\nconst body = { customerId: 1, address: '12 Idempotency Street, Johannesburg', couponCode: '',\r\n               items: [{ productId: 2, quantity: 1 }] };\r\n \r\npm.test('Request 1 creates the order (200/201)', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));\r\nconst firstId = idOf(parse(pm.response));\r\nconsole.log('Original order id:', firstId, '| key:', key);\r\n \r\nconst send = cb => pm.sendRequest({\r\n  url: base + '/orders', method: 'POST',\r\n  header: { 'Content-Type': 'application/json', 'Idempotency-Key': key },\r\n  body: { mode: 'raw', raw: JSON.stringify(body) }\r\n}, (e, r) => cb(r ? r.code : null, r ? parse(r) : null));\r\n \r\nconst results = []; let done = 0;\r\nconst finish = () => {\r\n  if (++done < 2) return;\r\n  results.forEach((x, i) => {\r\n    pm.test('Duplicate ' + (i + 1) + ': returns the original order or 409', () => {\r\n      pm.expect(x.c).to.be.oneOf([200, 201, 409]);\r\n      if (x.c !== 409) pm.expect(String(idOf(x.d))).to.eql(String(firstId));\r\n    });\r\n  });\r\n \r\n \r\n  pm.sendRequest(base + '/orders?customerId=1', (e, r) => {\r\n    const d = parse(r);\r\n    const list = Array.isArray(d) ? d : (d && (d.orders || d.data)) || [];\r\n    const created = list.filter(o => Number(pick(o, /^orderid$/i)) > maxBefore);\r\n    console.log('New order ids since the test started:', created.map(o => pick(o, /^orderid$/i)));\r\n    pm.test('Exactly one order exists for the key', () => pm.expect(created.length).to.eql(1));\r\n  });\r\n};\r\nsend((c, d) => { results[0] = { c, d }; finish(); });\r\nsend((c, d) => { results[1] = { c, d }; finish(); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer1 token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"customerId\": 1,\r\n  \"address\": \"14 Main Road, Cape Town\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "returns",
+      "item": [
+        {
+          "name": "RET-001",
+          "item": [
+            {
+              "name": "same day",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\n    const RefundAmount = pm.response.json().RefundAmount;\n\n    pm.expect(RefundAmount).to.exist;\n    pm.expect(RefundAmount).to.be.a(\"number\");\n    pm.expect(RefundAmount).to.be.above(0);\n});\npm.test(\"Checks refund amount\", function () {\n    const refundAmount = pm.response.json().RefundAmount;\n\n    pm.expect(refundAmount).to.exist;\n    pm.expect(refundAmount).to.be.a(\"number\");\n    pm.expect(refundAmount).to.be.above(0);\n\n});\n\npm.test(\"checks status\", function () {\n    pm.expect(pm.response.json().Status).to.equal(\"Approved\")\n\n})\n              pm.test(\"status code is as expected\", function () {\n                 pm.expect(pm.response.code).to.be.oneOf([201])\n              });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 1,\r\n  \"reason\": \"recieved broken\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/returns",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "returns"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "30 day",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\r\n    const RefundAmount = pm.response.json().RefundAmount;\r\n\r\n    pm.expect(RefundAmount).to.exist;\r\n    pm.expect(RefundAmount).to.be.a(\"number\");\r\n    pm.expect(RefundAmount).to.be.above(0);\r\n});\r\npm.test(\"Checks refund amount\", function () {\r\n    const refundAmount = pm.response.json().RefundAmount;\r\n\r\n    pm.expect(refundAmount).to.exist;\r\n    pm.expect(refundAmount).to.be.a(\"number\");\r\n    pm.expect(refundAmount).to.be.above(0);\r\n\r\n});\r\n\r\npm.test(\"checks status\", function () {\r\n    pm.expect(pm.response.json().Status).to.equal(\"Approved\")\r\n\r\n})\r\n              pm.test(\"status code is as expected\", function () {\r\n                 pm.expect(pm.response.code).to.be.oneOf([201])\r\n              });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 2,\r\n  \"reason\": \"not happy\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/returns",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "returns"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "31 day",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "        pm.test(\"error message check\", function() {\r\n    var jsonData = pm.response.json();\r\n    pm.expect(jsonData.message).to.eq( \"...\");\r\n});\r\n\r\npm.test(\"status code 400 is as expected\", function () {\r\n    pm.expect(pm.response.code).to.be.eq(400);\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 3,\r\n  \"reason\": \"not happy\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/returns",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "returns"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "RET-004",
+          "item": [
+            {
+              "name": "sku return",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"error message check\", function() {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData.message).to.eq(\"orderId and reason are required.\");\n});\n\npm.test(\"status code 400 is as expected\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([400, 422]);\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"SKU\" : \"SKU-1001\",\r\n  \"reason\": \"recieved broken\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/returns",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "returns"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "above qaunitty",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"error message check\", function() {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData.message).to.eq(\"orderId and reason are required.\");\n});\n\npm.test(\"status code 400 is as expected\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([400, 422]);\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 2,\r\n  \"quantity\" : 2,\r\n  \"reason\": \"recieved broken\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/returns",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "returns"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "RET-002",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check order ID\", function () {\n    const RefundAmount = pm.response.json().RefundAmount;\n\n    pm.expect(RefundAmount).to.exist;\n    pm.expect(RefundAmount).to.be.a(\"number\");\n    pm.expect(RefundAmount).to.be.above(0);\n});\npm.test(\"Checks refund amount\", function () {\n    const refundAmount = pm.response.json().RefundAmount;\n\n    pm.expect(refundAmount).to.exist;\n    pm.expect(refundAmount).to.be.a(\"number\");\n    pm.expect(refundAmount).to.be.eq(450);\n\n});\n\npm.test(\"checks status\", function () {\n    pm.expect(pm.response.json().Status).to.equal(\"Approved\")\n\n})\n              pm.test(\"status code is as expected\", function () {\n                 pm.expect(pm.response.code).to.be.oneOf([201])\n              });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer1 token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"orderId\": 1,\r\n  \"reason\": \"recieved broken\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/returns",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "returns"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "//blocked//ORD-003",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check order ID\", function () {\n    const RefundAmount = pm.response.json().RefundAmount;\n\n    pm.expect(RefundAmount).to.exist;\n    pm.expect(RefundAmount).to.be.a(\"number\");\n    pm.expect(RefundAmount).to.be.above(0);\n});\npm.test(\"Checks refund amount\", function () {\n    const refundAmount = pm.response.json().RefundAmount;\n\n    pm.expect(refundAmount).to.exist;\n    pm.expect(refundAmount).to.be.a(\"number\");\n    pm.expect(refundAmount).to.be.above(0);\n\n});\n\npm.test(\"checks status\", function () {\n    pm.expect(pm.response.json().Status).to.equal(\"Approved\")\n\n})\n              pm.test(\"status code is as expected\", function () {\n                 pm.expect(pm.response.code).to.be.oneOf([201])\n              });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer1 token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"orderId\": 1,\r\n  \"reason\": \"recieved broken\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/returns",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "returns"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "payments",
+      "item": [
+        {
+          "name": "PAY-001",
+          "item": [
+            {
+              "name": "make payment",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\n    const orderID = pm.response.json().OrderId;\n\n    pm.expect(orderID).to.exist;\n    pm.expect(orderID).to.be.a(\"number\");\n    pm.expect(orderID).to.be.above(0);\n});\npm.test(\"Check payment ID\", function () {\n    const PaymentId = pm.response.json().PaymentId;\n\n    pm.expect(PaymentId).to.exist;\n    pm.expect(PaymentId).to.be.a(\"number\");\n    pm.expect(PaymentId).to.be.above(0);\n});\npm.test(\"Checks amount paid\", function () {\n    const Amount = pm.response.json().Amount;\n\n    pm.expect(Amount).to.exist;\n    pm.expect(Amount).to.be.a(\"number\");\n    pm.expect(Amount).to.be.above(0);\n\n});\npm.test(\"Checks payment ref\", function () {\n    const TransactionRef = pm.response.json().TransactionRef;\n\n    pm.expect(TransactionRef).to.exist;\n    pm.expect(TransactionRef).to.be.a(\"string\");\n});\n\n\npm.test(\"checks status\", function () {\n    pm.expect(pm.response.json().Status).to.equal(\"Approved\")\n\n})\n              pm.test(\"status code is as expected\", function () {\n                 pm.expect(pm.response.code).to.be.oneOf([201])\n              });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 1,\r\n  \"cardNumber\": \"4242424242424242\",\r\n  \"expiry\": \"12/30\",\r\n  \"cvv\": \"123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/payments",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "persistence",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID is correct\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.eq(1);\r\n    });\r\n\r\npm.test('check status',function (){\r\n    const status = pm.response.json().Status;\r\n\r\n    pm.expect(status).to.exist\r\n    pm.expect(status).to.be.a(\"string\")\r\n    pm.expect(status).to.be.eq(\"Paid\")\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders/1",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "PAY-002",
+          "item": [
+            {
+              "name": "non-numeric cardnumber",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\npm.test(\"error message check\", function() {\n    var jsonData = pm.response.json();\n\npm.expect(jsonData.message).to.eq( \"Invalid payment format.\");\n});\n\n\npm.test(\"status code is as expected\", function () {\npm.expect(pm.response.code).to.be.eq(400)\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 1,\r\n  \"cardNumber\": \"qwertyhjkhgfdsfh\",\r\n  \"expiry\": \"12/30\",\r\n  \"cvv\": \"123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/payments",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "too short card number",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\npm.test(\"error message check\", function() {\n    var jsonData = pm.response.json();\n\npm.expect(jsonData.message).to.eq( \"Invalid payment format.\");\n});\n\n\npm.test(\"status code is as expected\", function () {\npm.expect(pm.response.code).to.be.eq(400)\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 2,\r\n  \"cardNumber\": \"424242\",\r\n  \"expiry\": \"12/30\",\r\n  \"cvv\": \"123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/payments",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "PAY-003",
+          "item": [
+            {
+              "name": "expired card",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\n\npm.test(\"error message check\", function() {\n    var jsonData = pm.response.json();\n\npm.expect(jsonData.message).to.eq( \"Invalid payment format.\");\n});\n\n\npm.test(\"status code is as expected\", function () {\npm.expect(pm.response.code).to.be.eq(400)\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 3,\r\n  \"cardNumber\": \"79927398713\",\r\n  \"expiry\": \"22/22\",\r\n  \"cvv\": \"123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/payments",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "PAY-004",
+          "item": [
+            {
+              "name": "2 digit",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\npm.test(\"error message check\", function() {\n    var jsonData = pm.response.json();\n\npm.expect(jsonData.message).to.eq( \"Invalid payment format.\");\n});\n\n\npm.test(\"status code is as expected\", function () {\npm.expect(pm.response.code).to.be.eq(400)\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 1,\r\n  \"cardNumber\": \"4242424242424242\",\r\n  \"expiry\": \"12/30\",\r\n  \"cvv\": \"12\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/payments",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "non-numeric",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\npm.test(\"error message check\", function() {\n    var jsonData = pm.response.json();\n\npm.expect(jsonData.message).to.eq( \"Invalid payment format.\");\n});\n\n\npm.test(\"status code is as expected\", function () {\npm.expect(pm.response.code).to.be.eq(400)\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 2,\r\n  \"cardNumber\": \"4242424242424242\",\r\n  \"expiry\": \"12/30\",\r\n  \"cvv\": \"ABC\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/payments",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "null",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\npm.test(\"error message check\", function() {\n    var jsonData = pm.response.json();\n\npm.expect(jsonData.message).to.eq( \"Payment fields are required.\");\n});\n\n\npm.test(\"status code is as expected\", function () {\npm.expect(pm.response.code).to.be.eq(400)\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 3,\r\n  \"cardNumber\": \"4242424242424242\",\r\n  \"expiry\": \"12/30\",\r\n  \"cvv\": \"\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/payments",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "PAY-005",
+          "item": [
+            {
+              "name": "invalid card",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\npm.test(\"Check order ID\", function () {\n    const orderID = pm.response.json().OrderId;\n\n    pm.expect(orderID).to.exist;\n    pm.expect(orderID).to.be.a(\"number\");\n    pm.expect(orderID).to.be.above(0);\n});\n\npm.test(\"Check payment ID\", function () {\n    const PaymentId = pm.response.json().PaymentId;\n\n    pm.expect(PaymentId).to.exist;\n    pm.expect(PaymentId).to.be.a(\"number\");\n    pm.expect(PaymentId).to.be.above(0);\n});\n\npm.test(\"Checks amount paid\", function () {\n    const Amount = pm.response.json().Amount;\n\n    pm.expect(Amount).to.exist;\n    pm.expect(Amount).to.be.a(\"number\");\n    pm.expect(Amount).to.be.above(0);\n});\n\npm.test(\"Checks payment ref\", function () {\n    const TransactionRef = pm.response.json().TransactionRef;\n\n    pm.expect(TransactionRef).to.exist;\n    pm.expect(TransactionRef).to.be.a(\"string\");\n});\n\npm.test(\"checks status\", function () {\n    const status = pm.response.json().Status;\n    pm.expect(status).to.be.eq(\"Declined\");\n});\n\npm.test(\"status code is as expected\", function () {\n    pm.expect(pm.response.code).to.be.eq(402);\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"orderId\": 4,\r\n    \"cardNumber\":\"4000000000000002\", \r\n    \"expiry\": \"12/30\", \r\n    \"cvv\": \"123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/payments",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "persistence",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID is correct\", function () {\n    const orderId = pm.response.json().OrderId;\n    pm.expect(orderId).to.exist;\n    pm.expect(orderId).to.be.a(\"number\");\n    });\n\npm.test('check status', function () {\n    const jsonData = pm.response.json();\n    const status = jsonData.payment.Status;\n\n    pm.expect(status).to.exist;\n    pm.expect(status).to.be.a(\"string\");\n    pm.expect(status).to.be.eq(\"Declined\");\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders/4",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "4"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "PAY-006",
+          "item": [
+            {
+              "name": "dupe payment",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\n    const orderID = pm.response.json().OrderId;\n\n    pm.expect(orderID).to.exist;\n    pm.expect(orderID).to.be.a(\"number\");\n    pm.expect(orderID).to.be.above(0);\n});\npm.test(\"Check payment ID\", function () {\n    const PaymentId = pm.response.json().PaymentId;\n\n    pm.expect(PaymentId).to.exist;\n    pm.expect(PaymentId).to.be.a(\"number\");\n    pm.expect(PaymentId).to.be.above(0);\n});\npm.test(\"Checks amount paid\", function () {\n    const Amount = pm.response.json().Amount;\n\n    pm.expect(Amount).to.exist;\n    pm.expect(Amount).to.be.a(\"number\");\n    pm.expect(Amount).to.be.above(0);\n\n});\npm.test(\"Checks payment ref\", function () {\n    const TransactionRef = pm.response.json().TransactionRef;\n\n    pm.expect(TransactionRef).to.exist;\n    pm.expect(TransactionRef).to.be.a(\"string\");\n});\n\n\npm.test(\"checks status\", function () {\n    pm.expect(pm.response.json().Status).to.equal(\"Approved\")\n\n})\n              pm.test(\"status code is as expected\", function () {\n                 pm.expect(pm.response.code).to.be.oneOf([201])\n              });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 1,\r\n  \"cardNumber\": \"4242424242424242\",\r\n  \"expiry\": \"12/30\",\r\n  \"cvv\": \"123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/payments",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "dupe payment Copy",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\n    const orderID = pm.response.json().OrderId;\n\n    pm.expect(orderID).to.exist;\n    pm.expect(orderID).to.be.a(\"number\");\n    pm.expect(orderID).to.be.above(0);\n});\npm.test(\"Check payment ID\", function () {\n    const PaymentId = pm.response.json().PaymentId;\n\n    pm.expect(PaymentId).to.exist;\n    pm.expect(PaymentId).to.be.a(\"number\");\n    pm.expect(PaymentId).to.be.above(0);\n});\npm.test(\"Checks amount paid\", function () {\n    const Amount = pm.response.json().Amount;\n\n    pm.expect(Amount).to.exist;\n    pm.expect(Amount).to.be.a(\"number\");\n    pm.expect(Amount).to.be.above(0);\n\n});\npm.test(\"Checks payment ref\", function () {\n    const TransactionRef = pm.response.json().TransactionRef;\n\n    pm.expect(TransactionRef).to.exist;\n    pm.expect(TransactionRef).to.be.a(\"string\");\n});\n\n\npm.test(\"checks status\", function () {\n    pm.expect(pm.response.json().Status).to.equal(\"Approved\")\n\n})\n              pm.test(\"status code is as expected\", function () {\n                 pm.expect(pm.response.code).to.be.oneOf([201])\n              });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 1,\r\n  \"cardNumber\": \"4242424242424242\",\r\n  \"expiry\": \"12/30\",\r\n  \"cvv\": \"123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/payments",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "PAY-007",
+          "item": [
+            {
+              "name": "return check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID is correct\", function () {\r\n    const orderId = pm.response.json().OrderId;\r\n    pm.expect(orderId).to.exist;\r\n    pm.expect(orderId).to.be.a(\"number\");\r\n    pm.expect(orderId).to.be.eq(1);\r\n    });\r\n\r\npm.test('check status',function (){\r\n    const status = pm.response.json().Status;\r\n\r\n    pm.expect(status).to.exist\r\n    pm.expect(status).to.be.a(\"string\")\r\n    pm.expect(status).to.be.eq(\"Paid\")\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/orders/1",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "PAY-008",
+          "item": [
+            {
+              "name": "partial return",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Check order ID\", function () {\n    const RefundAmount = pm.response.json().RefundAmount;\n\n    pm.expect(RefundAmount).to.exist;\n    pm.expect(RefundAmount).to.be.a(\"number\");\n    pm.expect(RefundAmount).to.be.above(0);\n});\npm.test(\"Checks refund amount\", function () {\n    const refundAmount = pm.response.json().RefundAmount;\n\n    pm.expect(refundAmount).to.exist;\n    pm.expect(refundAmount).to.be.a(\"number\");\n    pm.expect(refundAmount).to.be.above(0);\n\n});\n\npm.test(\"checks status\", function () {\n    pm.expect(pm.response.json().Status).to.equal(\"Approved\")\n\n})\n              pm.test(\"status code is as expected\", function () {\n                 pm.expect(pm.response.code).to.be.oneOf([201])\n              });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{customer1 token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"orderId\": 2,\r\n  \"reason\": \"recieved broken\",\r\n  \"quantity\" : 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/returns",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "returns"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
