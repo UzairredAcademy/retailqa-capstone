@@ -1,6 +1,9 @@
 # retailqa-capstone
 
 Quality Engineering capstone for **Lewis Retail Group** (RetailQE, Retail Delivery Module), built by **Uzair Salaam** and **Yaaseen Karriem** on the redAcademy Quality Engineering programme.
+Jira Board - https://redacademy-team-pl7gdg14.atlassian.net/jira/software/projects/LCP2/boards/68?filter=assignee+IN+%28712020%3Ab75c9151-4d53-425c-9e64-d5b5f2d1dd74%2C+empty%2C+712020%3Af6c9c8e6-e218-49cb-a860-213888aa98ca%29&groupBy=none&atlOrigin=eyJpIjoiMjc0NDQ3YzcwNjZkNGM2NDk1MGRkMDRmMGVhN2RjMDAiLCJwIjoiaiJ9
+
+GitHub Repository - https://github.com/UzairredAcademy/retailqa-capstone
 
 The project tests one retail application at four levels and checks that all of them agree with each other:
 
